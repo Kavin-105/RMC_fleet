@@ -21,7 +21,11 @@ export const documentService = {
 
     // Create document
     create: async (documentData) => {
-        const response = await api.post('/documents', documentData);
+        const response = await api.post('/documents', documentData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
         return response.data;
     },
 

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Plus, Search, FileText, Truck, Calendar, Upload, Loader2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Plus, Search, FileText, Truck, Calendar, Upload, Loader2, Eye, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import {
     Button,
@@ -31,6 +31,9 @@ export function Documents() {
     const [searchTerm, setSearchTerm] = useState('');
     const [typeFilter, setTypeFilter] = useState('All');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [filePreview, setFilePreview] = useState(null);
+    const fileInputRef = useRef(null);
     const [formData, setFormData] = useState({
         vehicle: '',
         type: '',
@@ -74,19 +77,67 @@ export function Documents() {
             type: '',
             expiryDate: ''
         });
+        setSelectedFile(null);
+        setFilePreview(null);
         setIsModalOpen(true);
     };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
+        setSelectedFile(null);
+        setFilePreview(null);
+    };
+
+    const handleFileSelect = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            // Validate file size (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                toast.error('File size must be less than 5MB');
+                return;
+            }
+
+            // Validate file type
+            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+            if (!allowedTypes.includes(file.type)) {
+                toast.error('Only PDF, JPG, and PNG files are allowed');
+                return;
+            }
+
+            setSelectedFile(file);
+            setFilePreview(file.name);
+        }
+    };
+
+    const handleRemoveFile = () => {
+        setSelectedFile(null);
+        setFilePreview(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        if (!formData.vehicle || !formData.type || !formData.expiryDate) {
+            toast.error('Please fill all required fields');
+            return;
+        }
+
         setSaving(true);
 
         try {
-            await documentService.create(formData);
+            const uploadData = new FormData();
+            uploadData.append('vehicle', formData.vehicle);
+            uploadData.append('type', formData.type);
+            uploadData.append('expiryDate', formData.expiryDate);
+            
+            if (selectedFile) {
+                uploadData.append('document', selectedFile);
+            }
+
+            await documentService.create(uploadData);
             toast.success('Document added successfully!');
             handleCloseModal();
             fetchData();
@@ -95,6 +146,14 @@ export function Documents() {
             toast.error(error.response?.data?.message || 'Failed to save document');
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handleViewDocument = (doc) => {
+        if (doc.fileUrl) {
+            window.open(`http://localhost:5000${doc.fileUrl}`, '_blank');
+        } else {
+            toast.error('No document file available');
         }
     };
 
@@ -224,12 +283,24 @@ export function Documents() {
                                     </span>
                                 </div>
 
-                                <button
-                                    className="document-delete-btn"
-                                    onClick={() => handleDelete(doc._id)}
-                                >
-                                    Delete
-                                </button>
+                                <div className="document-card-actions">
+                                    {doc.fileUrl && (
+                                        <button
+                                            className="document-action-btn view"
+                                            onClick={() => handleViewDocument(doc)}
+                                            title="View Document"
+                                        >
+                                            <Eye size={16} /> View
+                                        </button>
+                                    )}
+                                    <button
+                                        className="document-action-btn delete"
+                                        title="Delete"
+                                        onClick={() => handleDelete(doc._id)}
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
                             </Card>
                         );
                     })}
@@ -280,10 +351,38 @@ export function Documents() {
                         required
                     />
 
-                    <div className="upload-placeholder">
-                        <Upload size={24} />
-                        <p>Click to upload document</p>
-                        <span>PDF, JPG, PNG (Max 5MB)</span>
+                    <div className="form-group">
+                        <label className="form-label">Upload Document (Optional)</label>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            onChange={handleFileSelect}
+                            style={{ display: 'none' }}
+                        />
+                        
+                        {!filePreview ? (
+                            <div 
+                                className="upload-placeholder" 
+                                onClick={() => fileInputRef.current?.click()}
+                            >
+                                <Upload size={24} />
+                                <p>Click to upload document</p>
+                                <span>PDF, JPG, PNG (Max 5MB)</span>
+                            </div>
+                        ) : (
+                            <div className="file-preview">
+                                <FileText size={20} />
+                                <span>{filePreview}</span>
+                                <button 
+                                    type="button"
+                                    className="remove-file-btn"
+                                    onClick={handleRemoveFile}
+                                >
+                                    <X size={16} />
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </form>
             </Modal>
