@@ -67,6 +67,13 @@ exports.getDocument = async (req, res) => {
 exports.createDocument = async (req, res) => {
     try {
         req.body.owner = req.user.id;
+        
+        // If file was uploaded, add file info
+        if (req.file) {
+            req.body.fileName = req.file.originalname;
+            req.body.fileUrl = `/uploads/documents/${req.file.filename}`;
+        }
+        
         const document = await Document.create(req.body);
 
         const populatedDoc = await Document.findById(document._id)

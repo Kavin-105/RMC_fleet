@@ -9,6 +9,7 @@ const {
     getExpiringDocuments
 } = require('../controllers/documentController');
 const { protect, authorize } = require('../middleware/auth');
+const upload = require('../middleware/upload');
 
 router.use(protect);
 
@@ -17,7 +18,7 @@ router.get('/expiring', authorize('owner'), getExpiringDocuments);
 router
     .route('/')
     .get(getDocuments)
-    .post(authorize('owner'), createDocument);
+    .post(authorize('owner'), upload.single('document'), createDocument);
 
 router
     .route('/:id')
