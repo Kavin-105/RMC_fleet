@@ -150,8 +150,8 @@ export function Documents() {
     };
 
     const handleViewDocument = (doc) => {
-        if (doc.fileUrl) {
-            window.open(`http://localhost:5000${doc.fileUrl}`, '_blank');
+        if (doc._id) {
+            window.open(`http://localhost:5000/api/documents/${doc._id}/file`, '_blank');
         } else {
             toast.error('No document file available');
         }
@@ -284,7 +284,7 @@ export function Documents() {
                                 </div>
 
                                 <div className="document-card-actions">
-                                    {doc.fileUrl && (
+                                    {doc.fileName && (
                                         <button
                                             className="document-action-btn view"
                                             onClick={() => handleViewDocument(doc)}

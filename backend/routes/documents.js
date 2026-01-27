@@ -6,7 +6,8 @@ const {
     createDocument,
     updateDocument,
     deleteDocument,
-    getExpiringDocuments
+    getExpiringDocuments,
+    getDocumentFile
 } = require('../controllers/documentController');
 const { protect, authorize } = require('../middleware/auth');
 const upload = require('../middleware/upload');
@@ -19,6 +20,9 @@ router
     .route('/')
     .get(getDocuments)
     .post(authorize('owner'), upload.single('document'), createDocument);
+
+// Must be before /:id route to avoid conflict
+router.get('/:id/file', getDocumentFile);
 
 router
     .route('/:id')

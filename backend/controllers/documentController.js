@@ -68,10 +68,11 @@ exports.createDocument = async (req, res) => {
     try {
         req.body.owner = req.user.id;
         
-        // If file was uploaded, add file info
+        // If file was uploaded, convert to Base64 and save in DB
         if (req.file) {
             req.body.fileName = req.file.originalname;
-            req.body.fileUrl = `/uploads/documents/${req.file.filename}`;
+            req.body.fileData = req.file.buffer.toString('base64');
+            req.body.fileContentType = req.file.mimetype;
         }
         
         const document = await Document.create(req.body);
@@ -178,6 +179,45 @@ exports.getExpiringDocuments = async (req, res) => {
             count: documents.length,
             data: documents
         });
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+    }
+};
+
+// @desc    Get document file
+// @route   GET /api/documents/:id/file
+exports.getDocumentFile = async (req, res) => {
+    try {
+        const document = await Document.findById(req.params.id);
+
+        if (!document) {
+            return res.status(404).json({
+                success: false,
+                message: 'Document not found'
+            });
+        }
+
+        if (!document.fileData) {
+            return res.status(404).json({
+                success: false,
+                message: 'No file attached to this document'
+            });
+        }
+
+        // Convert Base64 back to buffer
+        const fileBuffer = Buffer.from(document.fileData, 'base64');
+
+        // Set appropriate headers
+        res.set({
+            'Content-Type': document.fileContentType,
+            'Content-Disposition': `inline; filename="${document.fileName}"`,
+            'Content-Length': fileBuffer.length
+        });
+
+        res.send(fileBuffer);
     } catch (err) {
         res.status(500).json({
             success: false,

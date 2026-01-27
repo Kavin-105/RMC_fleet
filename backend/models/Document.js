@@ -11,11 +11,15 @@ const documentSchema = new mongoose.Schema({
         required: [true, 'Please provide document type'],
         enum: ['RC Book', 'Insurance', 'Fitness', 'Permit', 'Pollution', 'Service']
     },
-    fileUrl: {
+    fileName: {
         type: String,
         default: null
     },
-    fileName: {
+    fileData: {
+        type: String, // Base64 encoded file
+        default: null
+    },
+    fileContentType: {
         type: String,
         default: null
     },
