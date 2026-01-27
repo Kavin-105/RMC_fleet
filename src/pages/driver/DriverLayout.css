@@ -1,0 +1,266 @@
+/* ===== DRIVER LAYOUT STYLES ===== */
+
+.driver-layout {
+    min-height: 100vh;
+    background: var(--grey-50);
+    display: flex;
+    flex-direction: column;
+}
+
+.driver-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: var(--white);
+    border-bottom: 1px solid var(--grey-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--space-4);
+    z-index: 100;
+}
+
+.driver-header-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.driver-header-logo-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+}
+
+.driver-header-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--grey-900);
+}
+
+.driver-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.driver-header-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    color: var(--grey-600);
+    position: relative;
+    transition: all var(--transition-fast);
+}
+
+.driver-header-btn:hover {
+    background: var(--grey-100);
+    color: var(--grey-800);
+}
+
+.driver-header-badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 8px;
+    height: 8px;
+    background: var(--red-500);
+    border-radius: 50%;
+    border: 2px solid var(--white);
+}
+
+.driver-content {
+    flex: 1;
+    padding: var(--space-4);
+    padding-top: calc(60px + var(--space-4));
+    padding-bottom: calc(72px + var(--space-4));
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.driver-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 72px;
+    background: var(--white);
+    border-top: 1px solid var(--grey-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 var(--space-2);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+    z-index: 100;
+}
+
+.driver-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: var(--space-2) var(--space-3);
+    color: var(--grey-500);
+    font-size: 11px;
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-fast);
+    min-width: 64px;
+}
+
+.driver-nav-item svg {
+    width: 24px;
+    height: 24px;
+}
+
+.driver-nav-item:hover {
+    color: var(--grey-700);
+}
+
+.driver-nav-item.active {
+    color: var(--blue-600);
+}
+
+.driver-nav-item.active svg {
+    color: var(--blue-500);
+}
+
+/* Driver Page Header */
+.driver-page-header {
+    margin-bottom: var(--space-4);
+}
+
+.driver-page-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--grey-900);
+    margin-bottom: var(--space-1);
+}
+
+.driver-page-subtitle {
+    font-size: var(--font-size-sm);
+    color: var(--grey-500);
+}
+
+/* Profile Dropdown */
+.driver-profile-dropdown {
+    position: relative;
+}
+
+.driver-profile-btn {
+    cursor: pointer;
+}
+
+.driver-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 220px;
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--grey-200);
+    z-index: 200;
+    animation: dropdownFadeIn 0.2s ease;
+    overflow: hidden;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.driver-dropdown-header {
+    padding: var(--space-4);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    background: var(--grey-50);
+}
+
+.driver-dropdown-avatar {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, var(--blue-400), var(--blue-500));
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    flex-shrink: 0;
+}
+
+.driver-dropdown-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.driver-dropdown-name {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--grey-900);
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.driver-dropdown-role {
+    font-size: var(--font-size-xs);
+    color: var(--grey-500);
+}
+
+.driver-dropdown-divider {
+    height: 1px;
+    background: var(--grey-200);
+}
+
+.driver-dropdown-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--grey-700);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: left;
+}
+
+.driver-dropdown-item:hover {
+    background: var(--grey-100);
+    color: var(--grey-900);
+}
+
+.driver-dropdown-item svg {
+    color: var(--grey-500);
+}
+
+.driver-dropdown-item:hover svg {
+    color: var(--red-500);
+}

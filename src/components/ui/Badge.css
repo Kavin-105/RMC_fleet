@@ -1,0 +1,120 @@
+/* ===== BADGE COMPONENT ===== */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--radius-full);
+    white-space: nowrap;
+}
+
+.badge svg {
+    width: 12px;
+    height: 12px;
+}
+
+/* Badge Variants */
+.badge-grey {
+    background: var(--grey-100);
+    color: var(--grey-700);
+}
+
+.badge-blue {
+    background: var(--blue-100);
+    color: var(--blue-700);
+}
+
+.badge-green {
+    background: var(--green-100);
+    color: var(--green-700);
+}
+
+.badge-yellow {
+    background: var(--yellow-100);
+    color: var(--yellow-700);
+}
+
+.badge-red {
+    background: var(--red-100);
+    color: var(--red-700);
+}
+
+/* Status Badges */
+.badge-active {
+    background: var(--green-100);
+    color: var(--green-700);
+}
+
+.badge-inactive {
+    background: var(--grey-100);
+    color: var(--grey-600);
+}
+
+.badge-pending {
+    background: var(--yellow-100);
+    color: var(--yellow-700);
+}
+
+.badge-approved {
+    background: var(--green-100);
+    color: var(--green-700);
+}
+
+.badge-rejected {
+    background: var(--red-100);
+    color: var(--red-700);
+}
+
+.badge-maintenance {
+    background: var(--yellow-100);
+    color: var(--yellow-700);
+}
+
+/* Document Status Badges */
+.badge-valid {
+    background: var(--green-100);
+    color: var(--green-700);
+}
+
+.badge-expiring {
+    background: var(--yellow-100);
+    color: var(--yellow-700);
+}
+
+.badge-expired {
+    background: var(--red-100);
+    color: var(--red-700);
+}
+
+/* Dot indicator */
+.badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.badge-dot.green {
+    background: var(--green-500);
+}
+
+.badge-dot.yellow {
+    background: var(--yellow-500);
+}
+
+.badge-dot.red {
+    background: var(--red-500);
+}
+
+.badge-dot.grey {
+    background: var(--grey-400);
+}
+
+/* Large Badge */
+.badge-lg {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-sm);
+}

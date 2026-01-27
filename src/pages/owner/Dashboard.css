@@ -1,0 +1,217 @@
+/* ===== DASHBOARD PAGE STYLES ===== */
+
+/* Stats Grid - Main KPI Cards */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+@media (max-width: 1200px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Dashboard Grid - 2 Column Layout */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+    margin-bottom: var(--space-6);
+}
+
+@media (max-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Dashboard Card */
+.dashboard-card {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--grey-200);
+    padding: var(--space-5);
+}
+
+.dashboard-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-4);
+}
+
+.dashboard-card-header h3 {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--grey-900);
+}
+
+/* Dashboard Alert */
+.dashboard-alert {
+    background: var(--yellow-50);
+    border: 1px solid var(--yellow-200);
+    border-radius: var(--radius-xl);
+    padding: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.dashboard-alert-content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.dashboard-alert-content svg {
+    color: var(--yellow-600);
+    flex-shrink: 0;
+}
+
+.dashboard-alert-content h4 {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--grey-900);
+    margin-bottom: var(--space-1);
+}
+
+.dashboard-alert-content p {
+    font-size: var(--font-size-sm);
+    color: var(--grey-600);
+}
+
+/* Pending Expenses List */
+.pending-expenses-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.pending-expense-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3);
+    background: var(--grey-50);
+    border-radius: var(--radius-lg);
+}
+
+.pending-expense-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.pending-expense-type {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--grey-900);
+}
+
+.pending-expense-vehicle {
+    font-size: var(--font-size-xs);
+    color: var(--grey-500);
+}
+
+.pending-expense-amount {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--grey-900);
+}
+
+/* Expiring Documents List */
+.expiring-docs-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.expiring-doc-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3);
+    background: var(--grey-50);
+    border-radius: var(--radius-lg);
+}
+
+.expiring-doc-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.expiring-doc-type {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--grey-900);
+}
+
+.expiring-doc-vehicle {
+    font-size: var(--font-size-xs);
+    color: var(--grey-500);
+}
+
+/* Recent Activity */
+.recent-activity {
+    margin-top: var(--space-6);
+}
+
+.activity-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--grey-100);
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-lg);
+    background: var(--grey-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--grey-500);
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-content p {
+    font-size: var(--font-size-sm);
+    color: var(--grey-700);
+    margin-bottom: var(--space-1);
+}
+
+.activity-content span {
+    font-size: var(--font-size-xs);
+    color: var(--grey-500);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: var(--space-6);
+    color: var(--grey-500);
+    font-size: var(--font-size-sm);
+}
