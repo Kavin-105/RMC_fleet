@@ -46,13 +46,15 @@ export function DriverDashboard() {
         }
     };
 
-    // Mock vehicle data for demo
-    const vehicle = {
-        vehicleNumber: 'MH-12-AB-1234',
-        model: 'Schwing Stetter AM 9',
-        currentOdometer: 45230,
-        engineHours: 1850
-    };
+    // Get assigned vehicle from driver info
+    const assignedVehicle = driverInfo?.assignedVehicles?.[0];
+    const vehicle = assignedVehicle ? {
+        vehicleNumber: assignedVehicle.vehicleNumber || 'Not Assigned',
+        model: assignedVehicle.model || 'Unknown Model',
+        currentOdometer: assignedVehicle.currentOdometer || 0,
+        engineHours: assignedVehicle.engineHours || 0,
+        status: assignedVehicle.status || 'active'
+    } : null;
 
     const checklistCompleted = todayChecklist?.allChecked || false;
 
@@ -73,36 +75,52 @@ export function DriverDashboard() {
             </div>
 
             {/* Vehicle Card */}
-            <div className="driver-vehicle-card">
-                <div className="driver-vehicle-header">
-                    <div>
-                        <div className="driver-vehicle-number">{vehicle.vehicleNumber}</div>
-                        <div style={{ fontSize: 'var(--font-size-sm)', opacity: 0.9, marginTop: '4px' }}>{vehicle.model}</div>
+            {vehicle ? (
+                <div className="driver-vehicle-card">
+                    <div className="driver-vehicle-header">
+                        <div>
+                            <div className="driver-vehicle-number">{vehicle.vehicleNumber}</div>
+                            <div style={{ fontSize: 'var(--font-size-sm)', opacity: 0.9, marginTop: '4px' }}>{vehicle.model}</div>
+                        </div>
+                        <span className="driver-vehicle-status" style={{
+                            background: vehicle.status === 'active' ? 'var(--green-500)' : 'var(--grey-400)'
+                        }}>
+                            {vehicle.status?.charAt(0).toUpperCase() + vehicle.status?.slice(1) || 'Active'}
+                        </span>
                     </div>
-                    <span className="driver-vehicle-status">Active</span>
-                </div>
 
-                <div className="driver-vehicle-info">
-                    <div className="driver-vehicle-stat">
-                        <div className="driver-vehicle-stat-label">
-                            <Gauge size={14} style={{ marginRight: '6px', verticalAlign: 'middle' }} />
-                            Odometer
+                    <div className="driver-vehicle-info">
+                        <div className="driver-vehicle-stat">
+                            <div className="driver-vehicle-stat-label">
+                                <Gauge size={14} style={{ marginRight: '6px', verticalAlign: 'middle' }} />
+                                Odometer
+                            </div>
+                            <div className="driver-vehicle-stat-value">
+                                {vehicle.currentOdometer.toLocaleString()} km
+                            </div>
                         </div>
-                        <div className="driver-vehicle-stat-value">
-                            {vehicle.currentOdometer.toLocaleString()} km
-                        </div>
-                    </div>
-                    <div className="driver-vehicle-stat">
-                        <div className="driver-vehicle-stat-label">
-                            <Clock size={14} style={{ marginRight: '6px', verticalAlign: 'middle' }} />
-                            Engine Hours
-                        </div>
-                        <div className="driver-vehicle-stat-value">
-                            {vehicle.engineHours} hrs
+                        <div className="driver-vehicle-stat">
+                            <div className="driver-vehicle-stat-label">
+                                <Clock size={14} style={{ marginRight: '6px', verticalAlign: 'middle' }} />
+                                Engine Hours
+                            </div>
+                            <div className="driver-vehicle-stat-value">
+                                {vehicle.engineHours} hrs
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            ) : (
+                <div className="driver-vehicle-card" style={{ background: 'var(--grey-100)', color: 'var(--grey-600)' }}>
+                    <div style={{ textAlign: 'center', padding: 'var(--space-4)' }}>
+                        <Truck size={48} style={{ opacity: 0.5, marginBottom: 'var(--space-2)' }} />
+                        <p style={{ margin: 0, fontWeight: 500 }}>No Vehicle Assigned</p>
+                        <p style={{ margin: 'var(--space-1) 0 0', fontSize: 'var(--font-size-sm)' }}>
+                            Please contact your fleet manager
+                        </p>
+                    </div>
+                </div>
+            )}
 
             {/* Checklist Alert */}
             <div

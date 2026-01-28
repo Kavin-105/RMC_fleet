@@ -203,7 +203,13 @@ export function Vehicles() {
             fetchData();
         } catch (error) {
             console.error('Error assigning driver:', error);
-            toast.error('Failed to assign driver');
+            const errorMessage = error.response?.data?.message || 'Failed to assign driver';
+            toast.error(errorMessage);
+
+            // If there's a conflict vehicle, show additional info
+            if (error.response?.data?.conflictVehicle) {
+                toast.error(`Remove driver from ${error.response.data.conflictVehicle} first`, { duration: 5000 });
+            }
         } finally {
             setSaving(false);
         }
@@ -295,7 +301,7 @@ export function Vehicles() {
                                 filteredVehicles.map((vehicle) => {
                                     const driver = vehicle.assignedDriver;
                                     return (
-                                        <TableRow 
+                                        <TableRow
                                             key={vehicle._id}
                                             onClick={() => handleViewDetails(vehicle)}
                                             style={{ cursor: 'pointer' }}
@@ -332,8 +338,8 @@ export function Vehicles() {
                                             </TableCell>
                                             <TableCell>
                                                 <div className="row-actions" onClick={(e) => e.stopPropagation()}>
-                                                    <button 
-                                                        className="action-btn" 
+                                                    <button
+                                                        className="action-btn"
                                                         title="View Details"
                                                         onClick={() => handleViewDetails(vehicle)}
                                                     >

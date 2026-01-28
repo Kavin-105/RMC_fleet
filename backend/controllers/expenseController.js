@@ -135,8 +135,16 @@ exports.createExpense = async (req, res) => {
                 if (!req.body.driver) {
                     req.body.driver = driver._id;
                 }
+                // Check if driver has an assigned vehicle
+                if (!driver.assignedVehicles || driver.assignedVehicles.length === 0) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'You do not have an assigned vehicle. Please contact your fleet manager to assign a vehicle before submitting expenses.',
+                        noVehicle: true
+                    });
+                }
                 // Set the vehicle from driver's assigned vehicles if not provided
-                if (!req.body.vehicle && driver.assignedVehicles?.length > 0) {
+                if (!req.body.vehicle) {
                     req.body.vehicle = driver.assignedVehicles[0];
                 }
             }
@@ -144,6 +152,13 @@ exports.createExpense = async (req, res) => {
 
         req.body.owner = ownerId;
         req.body.status = 'Pending'; // Always start as pending
+
+        // Handle file upload if present
+        if (req.file) {
+            req.body.billPhoto = req.file.buffer.toString('base64');
+            req.body.billPhotoContentType = req.file.mimetype;
+            req.body.billPhotoName = req.file.originalname;
+        }
 
         const expense = await Expense.create(req.body);
 
@@ -280,6 +295,45 @@ exports.deleteExpense = async (req, res) => {
             success: true,
             data: {}
         });
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+    }
+};
+
+// @desc    Get expense bill photo
+// @route   GET /api/expenses/:id/bill
+exports.getBillPhoto = async (req, res) => {
+    try {
+        const expense = await Expense.findById(req.params.id);
+
+        if (!expense) {
+            return res.status(404).json({
+                success: false,
+                message: 'Expense not found'
+            });
+        }
+
+        if (!expense.billPhoto) {
+            return res.status(404).json({
+                success: false,
+                message: 'No bill photo attached to this expense'
+            });
+        }
+
+        // Convert Base64 back to buffer
+        const fileBuffer = Buffer.from(expense.billPhoto, 'base64');
+
+        // Set appropriate headers
+        res.set({
+            'Content-Type': expense.billPhotoContentType || 'image/jpeg',
+            'Content-Disposition': `inline; filename="${expense.billPhotoName || 'bill.jpg'}"`,
+            'Content-Length': fileBuffer.length
+        });
+
+        res.send(fileBuffer);
     } catch (err) {
         res.status(500).json({
             success: false,

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Camera, Fuel, Wrench, CircleDollarSign, Package, Loader2, Check } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Camera, Fuel, Wrench, CircleDollarSign, Package, Loader2, Check, AlertTriangle, X, Eye } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Card, Button, Input, Badge, Textarea } from '../../components/ui';
 import { expenseService } from '../../services';
@@ -19,6 +19,9 @@ export function DriverExpenses() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [showForm, setShowForm] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [filePreview, setFilePreview] = useState(null);
+    const fileInputRef = useRef(null);
     const [formData, setFormData] = useState({
         type: '',
         amount: '',
@@ -43,6 +46,50 @@ export function DriverExpenses() {
         }
     };
 
+    const handleFileSelect = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                toast.error('File size must be less than 5MB');
+                return;
+            }
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (!allowedTypes.includes(file.type)) {
+                toast.error('Only JPG and PNG images are allowed');
+                return;
+            }
+            setSelectedFile(file);
+            setFilePreview(URL.createObjectURL(file));
+        }
+    };
+
+    const handleRemoveFile = () => {
+        setSelectedFile(null);
+        setFilePreview(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
+
+    const handleViewBill = async (expense) => {
+        if (!expense.billPhoto) {
+            toast.error('No bill photo attached');
+            return;
+        }
+        try {
+            toast.loading('Loading bill...', { id: 'bill-loading' });
+            const response = await expenseService.getBillPhoto(expense._id);
+            const blob = new Blob([response], { type: expense.billPhotoContentType || 'image/jpeg' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+            toast.dismiss('bill-loading');
+        } catch (error) {
+            console.error('Error loading bill:', error);
+            toast.dismiss('bill-loading');
+            toast.error('Failed to load bill photo');
+        }
+    };
+
     const handleSubmit = async () => {
         if (!formData.type || !formData.amount) {
             toast.error('Please fill in all required fields');
@@ -53,20 +100,26 @@ export function DriverExpenses() {
         try {
             // Get driver and vehicle info
             const driver = authService.getCurrentDriver();
-            const user = authService.getCurrentUser();
 
-            const expenseData = {
-                ...formData,
-                amount: parseFloat(formData.amount),
-                vehicle: driver?.assignedVehicles?.[0]?._id || driver?.assignedVehicles?.[0],
-                driver: driver?._id,
-                date: new Date()
-            };
+            // Use FormData for file upload
+            const uploadData = new FormData();
+            uploadData.append('type', formData.type);
+            uploadData.append('amount', parseFloat(formData.amount));
+            uploadData.append('description', formData.description);
+            uploadData.append('vehicle', driver?.assignedVehicles?.[0]?._id || driver?.assignedVehicles?.[0]);
+            uploadData.append('driver', driver?._id);
+            uploadData.append('date', new Date().toISOString());
 
-            await expenseService.create(expenseData);
+            if (selectedFile) {
+                uploadData.append('billPhoto', selectedFile);
+            }
+
+            await expenseService.create(uploadData);
             toast.success('Expense submitted successfully!');
 
             setFormData({ type: '', amount: '', description: '' });
+            setSelectedFile(null);
+            setFilePreview(null);
             setShowForm(false);
             fetchExpenses();
         } catch (error) {
@@ -93,11 +146,40 @@ export function DriverExpenses() {
             </div>
 
             {/* Add Expense Form Toggle */}
-            {!showForm ? (
-                <Button fullWidth onClick={() => setShowForm(true)} style={{ marginBottom: 'var(--space-4)' }}>
-                    + Add New Expense
-                </Button>
-            ) : (
+            {(() => {
+                const driver = authService.getCurrentDriver();
+                const hasVehicle = driver?.assignedVehicles?.length > 0;
+
+                if (!hasVehicle) {
+                    return (
+                        <Card style={{
+                            marginBottom: 'var(--space-4)',
+                            background: 'var(--yellow-50)',
+                            border: '1px solid var(--yellow-200)',
+                            textAlign: 'center',
+                            padding: 'var(--space-6)'
+                        }}>
+                            <AlertTriangle size={48} style={{ color: 'var(--yellow-500)', marginBottom: 'var(--space-2)' }} />
+                            <h3 style={{ margin: '0 0 var(--space-2) 0', color: 'var(--yellow-700)' }}>No Vehicle Assigned</h3>
+                            <p style={{ margin: 0, color: 'var(--yellow-600)', fontSize: 'var(--font-size-sm)' }}>
+                                You cannot submit expenses without an assigned vehicle.<br />
+                                Please contact your fleet manager.
+                            </p>
+                        </Card>
+                    );
+                }
+
+                if (!showForm) {
+                    return (
+                        <Button fullWidth onClick={() => setShowForm(true)} style={{ marginBottom: 'var(--space-4)' }}>
+                            + Add New Expense
+                        </Button>
+                    );
+                }
+
+                return null;
+            })()}
+            {showForm && (
                 <Card className="expense-form-card">
                     <h3 style={{ marginBottom: 'var(--space-4)' }}>New Expense</h3>
 
@@ -139,10 +221,33 @@ export function DriverExpenses() {
                     />
 
                     {/* Photo Upload */}
-                    <button className="photo-upload-btn">
-                        <Camera size={20} />
-                        <span>Add Bill Photo</span>
-                    </button>
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".jpg,.jpeg,.png"
+                        onChange={handleFileSelect}
+                        style={{ display: 'none' }}
+                    />
+                    {!filePreview ? (
+                        <button
+                            className="photo-upload-btn"
+                            onClick={() => fileInputRef.current?.click()}
+                        >
+                            <Camera size={20} />
+                            <span>Add Bill Photo</span>
+                        </button>
+                    ) : (
+                        <div className="file-preview-container">
+                            <img src={filePreview} alt="Bill preview" className="bill-preview-image" />
+                            <button
+                                type="button"
+                                className="remove-file-btn"
+                                onClick={handleRemoveFile}
+                            >
+                                <X size={16} />
+                            </button>
+                        </div>
+                    )}
 
                     {/* Actions */}
                     <div className="expense-form-actions">
@@ -186,6 +291,14 @@ export function DriverExpenses() {
                                     <div className="expense-history-right">
                                         <span className="expense-history-amount">₹{expense.amount?.toLocaleString()}</span>
                                         <Badge variant={expense.status?.toLowerCase()}>{expense.status}</Badge>
+                                        {expense.billPhoto && (
+                                            <button
+                                                className="view-bill-btn"
+                                                onClick={() => handleViewBill(expense)}
+                                            >
+                                                <Eye size={14} /> View Bill
+                                            </button>
+                                        )}
                                     </div>
                                 </Card>
                             );

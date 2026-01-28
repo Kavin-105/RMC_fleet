@@ -215,3 +215,68 @@
     color: var(--grey-900);
     box-shadow: var(--shadow-sm);
 }
+
+/* Expense Actions - Table Button Styles */
+.expense-actions {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.expense-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: 1px solid;
+}
+
+.expense-action-btn.approve {
+    background: var(--green-50);
+    color: var(--green-700);
+    border-color: var(--green-200);
+}
+
+.expense-action-btn.approve:hover {
+    background: var(--green-500);
+    color: var(--white);
+    border-color: var(--green-500);
+}
+
+.expense-action-btn.reject {
+    background: var(--red-50);
+    color: var(--red-700);
+    border-color: var(--red-200);
+}
+
+.expense-action-btn.reject:hover {
+    background: var(--red-500);
+    color: var(--white);
+    border-color: var(--red-500);
+}
+
+.expense-action-btn.view {
+    background: var(--blue-50);
+    color: var(--blue-700);
+    border-color: var(--blue-200);
+}
+
+.expense-action-btn.view:hover {
+    background: var(--blue-500);
+    color: var(--white);
+    border-color: var(--blue-500);
+}
+
+.expense-action-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.expense-status-text {
+    font-size: var(--font-size-xs);
+    color: var(--grey-500);
+}
