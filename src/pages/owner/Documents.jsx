@@ -119,7 +119,7 @@ export function Documents() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!formData.vehicle || !formData.type || !formData.expiryDate) {
             toast.error('Please fill all required fields');
             return;
@@ -132,7 +132,7 @@ export function Documents() {
             uploadData.append('vehicle', formData.vehicle);
             uploadData.append('type', formData.type);
             uploadData.append('expiryDate', formData.expiryDate);
-            
+
             if (selectedFile) {
                 uploadData.append('document', selectedFile);
             }
@@ -149,11 +149,30 @@ export function Documents() {
         }
     };
 
-    const handleViewDocument = (doc) => {
-        if (doc._id) {
-            window.open(`http://localhost:5000/api/documents/${doc._id}/file`, '_blank');
-        } else {
+    const handleViewDocument = async (doc) => {
+        if (!doc._id || !doc.fileName) {
             toast.error('No document file available');
+            return;
+        }
+
+        try {
+            toast.loading('Loading document...', { id: 'doc-loading' });
+
+            // Fetch the document file via API with authentication
+            const response = await documentService.getFile(doc._id);
+
+            // Create blob from the response
+            const blob = new Blob([response], { type: doc.fileContentType || 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+
+            // Open in new tab
+            window.open(url, '_blank');
+
+            toast.dismiss('doc-loading');
+        } catch (error) {
+            console.error('Error loading document:', error);
+            toast.dismiss('doc-loading');
+            toast.error('Failed to load document');
         }
     };
 
@@ -360,10 +379,10 @@ export function Documents() {
                             onChange={handleFileSelect}
                             style={{ display: 'none' }}
                         />
-                        
+
                         {!filePreview ? (
-                            <div 
-                                className="upload-placeholder" 
+                            <div
+                                className="upload-placeholder"
                                 onClick={() => fileInputRef.current?.click()}
                             >
                                 <Upload size={24} />
@@ -374,7 +393,7 @@ export function Documents() {
                             <div className="file-preview">
                                 <FileText size={20} />
                                 <span>{filePreview}</span>
-                                <button 
+                                <button
                                     type="button"
                                     className="remove-file-btn"
                                     onClick={handleRemoveFile}

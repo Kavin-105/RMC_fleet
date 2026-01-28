@@ -225,3 +225,63 @@
     color: var(--grey-900);
     margin-bottom: var(--space-1);
 }
+
+/* File Preview Container */
+.file-preview-container {
+    position: relative;
+    width: 100%;
+    margin-top: var(--space-4);
+    border: 2px solid var(--grey-200);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.bill-preview-image {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    display: block;
+}
+
+.file-preview-container .remove-file-btn {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-full);
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.file-preview-container .remove-file-btn:hover {
+    background: var(--red-600);
+}
+
+/* View Bill Button */
+.view-bill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--blue-600);
+    background: var(--blue-50);
+    border: 1px solid var(--blue-200);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    margin-top: var(--space-1);
+}
+
+.view-bill-btn:hover {
+    background: var(--blue-100);
+    border-color: var(--blue-300);
+}

@@ -21,7 +21,11 @@ export const expenseService = {
 
     // Create expense
     create: async (expenseData) => {
-        const response = await api.post('/expenses', expenseData);
+        const response = await api.post('/expenses', expenseData, {
+            headers: expenseData instanceof FormData ? {
+                'Content-Type': 'multipart/form-data'
+            } : {}
+        });
         return response.data;
     },
 
@@ -46,6 +50,14 @@ export const expenseService = {
     // Delete expense
     delete: async (id) => {
         const response = await api.delete(`/expenses/${id}`);
+        return response.data;
+    },
+
+    // Get bill photo as blob
+    getBillPhoto: async (id) => {
+        const response = await api.get(`/expenses/${id}/bill`, {
+            responseType: 'arraybuffer'
+        });
         return response.data;
     }
 };

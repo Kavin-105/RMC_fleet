@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Check, X, Fuel, Wrench, CircleDollarSign, Package, Loader2 } from 'lucide-react';
+import { Search, Check, X, Fuel, Wrench, CircleDollarSign, Package, Loader2, Eye } from 'lucide-react';
 import toast from 'react-hot-toast';
 import {
     Button,
@@ -105,6 +105,25 @@ export function Expenses() {
         }
     };
 
+    const handleViewBill = async (expense) => {
+        if (!expense.billPhoto) {
+            toast.error('No bill photo attached');
+            return;
+        }
+        try {
+            toast.loading('Loading bill...', { id: 'bill-loading' });
+            const response = await expenseService.getBillPhoto(expense._id);
+            const blob = new Blob([response], { type: expense.billPhotoContentType || 'image/jpeg' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+            toast.dismiss('bill-loading');
+        } catch (error) {
+            console.error('Error loading bill:', error);
+            toast.dismiss('bill-loading');
+            toast.error('Failed to load bill photo');
+        }
+    };
+
     if (loading) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
@@ -182,6 +201,7 @@ export function Expenses() {
                                 <TableHead>Driver</TableHead>
                                 <TableHead>Amount</TableHead>
                                 <TableHead>Date</TableHead>
+                                <TableHead>Bill</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead>Actions</TableHead>
                             </TableRow>
@@ -214,6 +234,18 @@ export function Expenses() {
                                             </TableCell>
                                             <TableCell>
                                                 {new Date(expense.date || expense.createdAt).toLocaleDateString('en-IN')}
+                                            </TableCell>
+                                            <TableCell>
+                                                {expense.billPhoto ? (
+                                                    <button
+                                                        className="expense-action-btn view"
+                                                        onClick={() => handleViewBill(expense)}
+                                                    >
+                                                        <Eye size={14} /> View
+                                                    </button>
+                                                ) : (
+                                                    <span style={{ color: 'var(--grey-400)' }}>-</span>
+                                                )}
                                             </TableCell>
                                             <TableCell>
                                                 <Badge variant={expense.status?.toLowerCase()}>

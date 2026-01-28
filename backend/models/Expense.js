@@ -28,6 +28,14 @@ const expenseSchema = new mongoose.Schema({
         type: String,
         default: null
     },
+    billPhotoContentType: {
+        type: String,
+        default: null
+    },
+    billPhotoName: {
+        type: String,
+        default: null
+    },
     date: {
         type: Date,
         default: Date.now

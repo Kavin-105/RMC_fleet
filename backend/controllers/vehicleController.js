@@ -69,6 +69,22 @@ exports.getVehicle = async (req, res) => {
 exports.createVehicle = async (req, res) => {
     try {
         const Driver = require('../models/Driver');
+
+        // Check if driver is already assigned to another vehicle
+        if (req.body.assignedDriver) {
+            const existingVehicle = await Vehicle.findOne({
+                assignedDriver: req.body.assignedDriver
+            });
+
+            if (existingVehicle) {
+                return res.status(400).json({
+                    success: false,
+                    message: `This driver is already assigned to vehicle ${existingVehicle.vehicleNumber}. A driver can only be assigned to one vehicle at a time.`,
+                    conflictVehicle: existingVehicle.vehicleNumber
+                });
+            }
+        }
+
         req.body.owner = req.user.id;
         const vehicle = await Vehicle.create(req.body);
 
@@ -118,6 +134,22 @@ exports.updateVehicle = async (req, res) => {
         if (req.body.assignedDriver !== undefined) {
             const previousDriverId = vehicle.assignedDriver;
             const newDriverId = req.body.assignedDriver;
+
+            // Check if new driver is already assigned to another vehicle
+            if (newDriverId && (!previousDriverId || previousDriverId.toString() !== newDriverId)) {
+                const existingVehicle = await Vehicle.findOne({
+                    assignedDriver: newDriverId,
+                    _id: { $ne: req.params.id } // Exclude current vehicle
+                });
+
+                if (existingVehicle) {
+                    return res.status(400).json({
+                        success: false,
+                        message: `This driver is already assigned to vehicle ${existingVehicle.vehicleNumber}. A driver can only be assigned to one vehicle at a time.`,
+                        conflictVehicle: existingVehicle.vehicleNumber
+                    });
+                }
+            }
 
             // Remove from previous driver
             if (previousDriverId && previousDriverId.toString() !== newDriverId) {
@@ -201,6 +233,22 @@ exports.assignDriver = async (req, res) => {
                 success: false,
                 message: 'Vehicle not found'
             });
+        }
+
+        // Check if driver is already assigned to another vehicle
+        if (driverId) {
+            const existingVehicle = await Vehicle.findOne({
+                assignedDriver: driverId,
+                _id: { $ne: req.params.id } // Exclude current vehicle
+            });
+
+            if (existingVehicle) {
+                return res.status(400).json({
+                    success: false,
+                    message: `This driver is already assigned to vehicle ${existingVehicle.vehicleNumber}. A driver can only be assigned to one vehicle at a time.`,
+                    conflictVehicle: existingVehicle.vehicleNumber
+                });
+            }
         }
 
         // Get the previous driver ID before updating

@@ -97,6 +97,15 @@ exports.createChecklist = async (req, res) => {
     try {
         const { vehicle, driver } = req.body;
 
+        // Check if vehicle is provided
+        if (!vehicle) {
+            return res.status(400).json({
+                success: false,
+                message: 'You do not have an assigned vehicle. Please contact your fleet manager to assign a vehicle before submitting checklists.',
+                noVehicle: true
+            });
+        }
+
         // Check if checklist already exists for today
         const today = new Date();
         today.setHours(0, 0, 0, 0);

@@ -84,7 +84,7 @@ export function DailyChecklist() {
             setIsCompleted(true);
         } catch (error) {
             console.error('Error submitting checklist:', error);
-            
+
             // Check if already completed
             if (error.response?.data?.alreadyCompleted) {
                 setIsCompleted(true);
@@ -125,15 +125,15 @@ export function DailyChecklist() {
                 <div className="checklist-next-available">
                     <p>You can fill the next checklist on:</p>
                     <p className="next-date">
-                        {nextAvailable.toLocaleDateString('en-IN', { 
-                            weekday: 'long', 
-                            year: 'numeric', 
-                            month: 'long', 
-                            day: 'numeric' 
+                        {nextAvailable.toLocaleDateString('en-IN', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
                         })}
                     </p>
                 </div>
-                
+
                 {/* Show completed items */}
                 <div className="completed-checklist-items">
                     <h3>Completed Items:</h3>
@@ -145,6 +145,27 @@ export function DailyChecklist() {
                             </div>
                         ))}
                     </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Check if driver has an assigned vehicle
+    const driver = authService.getCurrentDriver();
+    const hasVehicle = driver?.assignedVehicles?.length > 0;
+
+    if (!hasVehicle) {
+        return (
+            <div className="checklist-no-vehicle-screen">
+                <div style={{ textAlign: 'center', padding: 'var(--space-8)' }}>
+                    <AlertTriangle size={64} style={{ color: 'var(--yellow-500)', marginBottom: 'var(--space-4)' }} />
+                    <h2 style={{ margin: '0 0 var(--space-2) 0', color: 'var(--yellow-700)' }}>No Vehicle Assigned</h2>
+                    <p style={{ color: 'var(--grey-600)', marginBottom: 'var(--space-4)' }}>
+                        You cannot complete the daily checklist without an assigned vehicle.
+                    </p>
+                    <p style={{ color: 'var(--grey-500)', fontSize: 'var(--font-size-sm)' }}>
+                        Please contact your fleet manager to assign a vehicle.
+                    </p>
                 </div>
             </div>
         );

@@ -21,13 +21,12 @@ router
     .get(getDocuments)
     .post(authorize('owner'), upload.single('document'), createDocument);
 
-// Must be before /:id route to avoid conflict
-router.get('/:id/file', getDocumentFile);
-
 router
     .route('/:id')
     .get(getDocument)
     .put(authorize('owner'), updateDocument)
     .delete(authorize('owner'), deleteDocument);
+
+router.get('/:id/file', getDocumentFile);
 
 module.exports = router;

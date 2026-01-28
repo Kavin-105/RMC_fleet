@@ -39,6 +39,14 @@ export const documentService = {
     delete: async (id) => {
         const response = await api.delete(`/documents/${id}`);
         return response.data;
+    },
+
+    // Get document file as blob
+    getFile: async (id) => {
+        const response = await api.get(`/documents/${id}/file`, {
+            responseType: 'arraybuffer'
+        });
+        return response.data;
     }
 };
 
