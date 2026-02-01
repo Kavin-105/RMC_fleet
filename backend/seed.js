@@ -25,7 +25,7 @@ const seedData = async () => {
 
     // ✅ Create owner using .save() to trigger pre-save hook
     const owner = new User({
-      name: 'Amit Sharma',
+      name: 'Rajkumar',
       email: 'owner@demo.com',
       password: 'demo123',
       role: 'owner'

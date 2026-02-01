@@ -9,7 +9,7 @@ export function OwnerLayout() {
 
     // Mock user data - will be replaced with actual auth
     const user = {
-        name: 'Amit Sharma',
+        name: 'Rajkumar',
         role: 'Owner'
     };
 
