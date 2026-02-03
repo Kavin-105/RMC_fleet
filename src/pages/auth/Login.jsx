@@ -10,6 +10,7 @@ export function Login() {
     const navigate = useNavigate();
     const [role, setRole] = useState('owner');
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
     const [formData, setFormData] = useState({
         email: '',
         mobile: '',
@@ -19,10 +20,45 @@ export function Login() {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+        // Clear error when user starts typing
+        if (error) setError('');
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+        
+        // Client-side validation
+        if (role === 'owner') {
+            if (!formData.email || !formData.email.trim()) {
+                setError('Email is required');
+                return;
+            }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+                setError('Please enter a valid email address');
+                return;
+            }
+        } else {
+            if (!formData.mobile || !formData.mobile.trim()) {
+                setError('Mobile number is required');
+                return;
+            }
+            if (!/^\d{10}$/.test(formData.mobile.trim())) {
+                setError('Please enter a valid 10-digit mobile number');
+                return;
+            }
+        }
+
+        if (!formData.password || !formData.password.trim()) {
+            setError('Password is required');
+            return;
+        }
+
+        if (formData.password.length < 6) {
+            setError('Password must be at least 6 characters long');
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -40,10 +76,24 @@ export function Login() {
                 } else {
                     navigate('/driver');
                 }
+            } else {
+                setError(response.message || 'Login failed. Please check your credentials.');
             }
         } catch (error) {
-            const message = error.response?.data?.message || 'Login failed. Please try again.';
+            let message = error.response?.data?.message || 'Login failed. Please try again.';
+            
+            // Check for specific authentication errors
+            if (error.response?.status === 401 || error.response?.status === 400) {
+                message = 'Incorrect email/mobile or password. Please try again.';
+            }
+            
+            setError(message);
             toast.error(message);
+            
+            // Show browser alert for incorrect credentials
+            if (error.response?.status === 401 || error.response?.status === 400) {
+                alert('⚠️ Login Failed\n\n' + message + '\n\nPlease check your credentials and try again.');
+            }
 
             // Fallback to demo mode if backend is not available
             if (error.code === 'ERR_NETWORK') {
@@ -101,6 +151,21 @@ export function Login() {
                 </div>
 
                 <form onSubmit={handleSubmit}>
+                    {error && (
+                        <div className="error-message" style={{
+                            padding: '12px 16px',
+                            marginBottom: '16px',
+                            backgroundColor: '#fee',
+                            border: '1px solid #fcc',
+                            borderRadius: '8px',
+                            color: '#c33',
+                            fontSize: '14px',
+                            fontWeight: '500'
+                        }}>
+                            {error}
+                        </div>
+                    )}
+
                     {role === 'owner' ? (
                         <Input
                             label="Email Address"
