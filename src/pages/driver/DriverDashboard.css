@@ -30,7 +30,7 @@
 
 .driver-vehicle-info {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: var(--space-4);
 }
 
@@ -54,9 +54,9 @@
 /* Quick Actions */
 .driver-quick-actions {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-3);
-    margin-bottom: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
 }
 
 .driver-action-card {
@@ -182,7 +182,8 @@
 
 /* Recent Expenses */
 .driver-section {
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--space-8);
+    max-width: 800px;
 }
 
 .driver-section-header {
@@ -193,7 +194,7 @@
 }
 
 .driver-section-title {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
     color: var(--grey-900);
 }

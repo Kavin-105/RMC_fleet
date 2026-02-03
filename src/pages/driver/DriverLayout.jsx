@@ -8,123 +8,120 @@ import {
     Receipt,
     User,
     LogOut,
-    ChevronDown
+    Menu,
+    X,
+    Building2
 } from 'lucide-react';
 import './DriverLayout.css';
 
+const navItems = [
+    { path: '/driver', icon: Home, label: 'Dashboard', end: true },
+    { path: '/driver/checklist', icon: ClipboardCheck, label: 'Daily Checklist' },
+    { path: '/driver/expenses', icon: Receipt, label: 'Expenses' },
+    { path: '/driver/notifications', icon: Bell, label: 'Notifications' },
+];
+
 export function DriverLayout() {
     const navigate = useNavigate();
-    const [isProfileOpen, setIsProfileOpen] = useState(false);
-    const profileRef = useRef(null);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    // Get driver info from localStorage or use default
+    // Get driver info from localStorage
     const user = JSON.parse(localStorage.getItem('user') || '{}');
-    const driverName = user.name || 'Rajesh Kumar';
-
-    // Close dropdown when clicking outside
-    useEffect(() => {
-        function handleClickOutside(event) {
-            if (profileRef.current && !profileRef.current.contains(event.target)) {
-                setIsProfileOpen(false);
-            }
-        }
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+    const driverName = user.name || 'Driver';
 
     const handleLogout = () => {
         localStorage.removeItem('user');
         localStorage.removeItem('token');
+        localStorage.removeItem('driver');
         navigate('/login');
     };
 
     return (
         <div className="driver-layout">
-            {/* Header */}
-            <header className="driver-header">
-                <div className="driver-header-logo">
-                    <div className="driver-header-logo-icon">
-                        <Truck size={20} />
-                    </div>
-                    <span className="driver-header-title">RMC Driver</span>
-                </div>
-                <div className="driver-header-actions">
-                    <button
-                        className="driver-header-btn"
-                        onClick={() => navigate('/driver/notifications')}
-                    >
-                        <Bell size={22} />
-                        <span className="driver-header-badge" />
+            {/* Sidebar Overlay for mobile */}
+            <div
+                className={`driver-sidebar-overlay ${sidebarOpen ? 'open' : ''}`}
+                onClick={() => setSidebarOpen(false)}
+            />
+
+            {/* Sidebar */}
+            <aside className={`driver-sidebar ${sidebarOpen ? 'open' : ''}`}>
+                <div className="driver-sidebar-header">
+                    <NavLink to="/driver" className="driver-sidebar-logo" onClick={() => setSidebarOpen(false)}>
+                        <div className="driver-sidebar-logo-icon">
+                            <Truck size={20} />
+                        </div>
+                        <div className="driver-sidebar-logo-text">
+                            <span className="driver-sidebar-logo-title">RMC Fleet</span>
+                            <span className="driver-sidebar-logo-subtitle">Driver Portal</span>
+                        </div>
+                    </NavLink>
+                    <button className="driver-sidebar-close" onClick={() => setSidebarOpen(false)}>
+                        <X size={20} />
                     </button>
-
-                    {/* Profile Dropdown */}
-                    <div className="driver-profile-dropdown" ref={profileRef}>
-                        <button
-                            className="driver-header-btn driver-profile-btn"
-                            onClick={() => setIsProfileOpen(!isProfileOpen)}
-                        >
-                            <User size={22} />
-                        </button>
-
-                        {isProfileOpen && (
-                            <div className="driver-dropdown-menu">
-                                <div className="driver-dropdown-header">
-                                    <div className="driver-dropdown-avatar">
-                                        {driverName.split(' ').map(n => n[0]).join('')}
-                                    </div>
-                                    <div className="driver-dropdown-info">
-                                        <p className="driver-dropdown-name">{driverName}</p>
-                                        <p className="driver-dropdown-role">Driver</p>
-                                    </div>
-                                </div>
-                                <div className="driver-dropdown-divider" />
-                                <button className="driver-dropdown-item" onClick={handleLogout}>
-                                    <LogOut size={18} />
-                                    <span>Logout</span>
-                                </button>
-                            </div>
-                        )}
-                    </div>
                 </div>
-            </header>
+
+                <nav className="driver-sidebar-nav">
+                    <p className="driver-sidebar-section-title">Main Menu</p>
+                    {navItems.map((item) => (
+                        <NavLink
+                            key={item.path}
+                            to={item.path}
+                            end={item.end}
+                            className={({ isActive }) =>
+                                `driver-sidebar-link ${isActive ? 'active' : ''}`
+                            }
+                            onClick={() => setSidebarOpen(false)}
+                        >
+                            <item.icon size={20} />
+                            {item.label}
+                        </NavLink>
+                    ))}
+                </nav>
+
+                <div className="driver-sidebar-footer">
+                    <div className="driver-sidebar-user">
+                        <div className="driver-sidebar-avatar">
+                            {driverName.split(' ').map(n => n[0]).join('')}
+                        </div>
+                        <div className="driver-sidebar-user-info">
+                            <p className="driver-sidebar-user-name">{driverName}</p>
+                            <p className="driver-sidebar-user-role">Driver</p>
+                        </div>
+                    </div>
+                    <button className="driver-sidebar-logout" onClick={handleLogout}>
+                        <LogOut size={18} />
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </aside>
 
             {/* Main Content */}
-            <main className="driver-content">
-                <Outlet />
-            </main>
+            <main className="driver-main">
+                {/* Header */}
+                <header className="driver-header">
+                    <button className="driver-menu-btn" onClick={() => setSidebarOpen(true)}>
+                        <Menu size={24} />
+                    </button>
+                    <div className="driver-header-title">
+                        <h1>Driver Portal</h1>
+                    </div>
+                    <div className="driver-header-actions">
+                        <button
+                            className="driver-header-btn"
+                            onClick={() => navigate('/driver/notifications')}
+                        >
+                            <Bell size={22} />
+                            <span className="driver-header-badge" />
+                        </button>
+                    </div>
+                </header>
 
-            {/* Bottom Navigation */}
-            <nav className="driver-nav">
-                <NavLink
-                    to="/driver"
-                    end
-                    className={({ isActive }) => `driver-nav-item ${isActive ? 'active' : ''}`}
-                >
-                    <Home />
-                    <span>Home</span>
-                </NavLink>
-                <NavLink
-                    to="/driver/checklist"
-                    className={({ isActive }) => `driver-nav-item ${isActive ? 'active' : ''}`}
-                >
-                    <ClipboardCheck />
-                    <span>Checklist</span>
-                </NavLink>
-                <NavLink
-                    to="/driver/expenses"
-                    className={({ isActive }) => `driver-nav-item ${isActive ? 'active' : ''}`}
-                >
-                    <Receipt />
-                    <span>Expenses</span>
-                </NavLink>
-                <NavLink
-                    to="/driver/notifications"
-                    className={({ isActive }) => `driver-nav-item ${isActive ? 'active' : ''}`}
-                >
-                    <Bell />
-                    <span>Alerts</span>
-                </NavLink>
-            </nav>
+                {/* Content Area */}
+                <div className="driver-content">
+                    <Outlet />
+                </div>
+            </main>
         </div>
     );
 }
