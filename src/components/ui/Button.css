@@ -29,14 +29,14 @@
 
 /* Primary Button */
 .btn-primary {
-    background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
     color: var(--white);
-    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 2px 4px rgba(14, 165, 233, 0.3);
 }
 
 .btn-primary:hover:not(:disabled) {
-    background: linear-gradient(135deg, var(--blue-600), var(--blue-700));
-    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.4);
+    background: linear-gradient(135deg, #0284c7, #0369a1);
+    box-shadow: 0 4px 8px rgba(14, 165, 233, 0.4);
     transform: translateY(-1px);
 }
 

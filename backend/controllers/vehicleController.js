@@ -70,6 +70,11 @@ exports.createVehicle = async (req, res) => {
     try {
         const Driver = require('../models/Driver');
 
+        // Convert empty string to null for assignedDriver
+        if (req.body.assignedDriver === '' || req.body.assignedDriver === undefined) {
+            req.body.assignedDriver = null;
+        }
+
         // Check if driver is already assigned to another vehicle
         if (req.body.assignedDriver) {
             const existingVehicle = await Vehicle.findOne({
@@ -128,6 +133,11 @@ exports.updateVehicle = async (req, res) => {
                 success: false,
                 message: 'Not authorized to update this vehicle'
             });
+        }
+
+        // Convert empty string to null for assignedDriver
+        if (req.body.assignedDriver === '') {
+            req.body.assignedDriver = null;
         }
 
         // If assignedDriver is being updated, sync with driver's assignedVehicles

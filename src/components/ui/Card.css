@@ -68,8 +68,8 @@
 }
 
 .stats-icon.blue {
-    background: var(--blue-100);
-    color: var(--blue-600);
+    background: #e0f2fe;
+    color: #0ea5e9;
 }
 
 .stats-icon.green {
@@ -147,6 +147,6 @@
 }
 
 .card.clickable:hover {
-    border-color: var(--blue-300);
+    border-color: #7dd3fc;
     transform: translateY(-2px);
 }

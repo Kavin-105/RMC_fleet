@@ -23,8 +23,8 @@
 }
 
 .badge-blue {
-    background: var(--blue-100);
-    color: var(--blue-700);
+    background: #e0f2fe;
+    color: #0369a1;
 }
 
 .badge-green {

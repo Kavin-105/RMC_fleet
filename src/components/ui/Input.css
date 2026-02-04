@@ -34,8 +34,8 @@
 }
 
 .form-input:focus {
-    border-color: var(--blue-500);
-    box-shadow: 0 0 0 3px var(--blue-100);
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 3px #e0f2fe;
 }
 
 .form-input::placeholder {
@@ -102,8 +102,8 @@
 
 .form-select:focus {
     outline: none;
-    border-color: var(--blue-500);
-    box-shadow: 0 0 0 3px var(--blue-100);
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 3px #e0f2fe;
 }
 
 /* Textarea */
@@ -123,8 +123,8 @@
 
 .form-textarea:focus {
     outline: none;
-    border-color: var(--blue-500);
-    box-shadow: 0 0 0 3px var(--blue-100);
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 3px #e0f2fe;
 }
 
 /* Checkbox & Radio */
@@ -141,12 +141,12 @@
     border: 2px solid var(--grey-300);
     border-radius: var(--radius-sm);
     cursor: pointer;
-    accent-color: var(--blue-500);
+    accent-color: #0ea5e9;
 }
 
 .form-checkbox:checked {
-    background: var(--blue-500);
-    border-color: var(--blue-500);
+    background: #0ea5e9;
+    border-color: #0ea5e9;
 }
 
 .checkbox-label {

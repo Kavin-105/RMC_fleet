@@ -124,11 +124,17 @@ export function Vehicles() {
         setSaving(true);
 
         try {
+            // Clean the data - convert empty driver to null
+            const cleanedData = {
+                ...formData,
+                assignedDriver: formData.assignedDriver || null
+            };
+
             if (editingVehicle) {
-                await vehicleService.update(editingVehicle._id, formData);
+                await vehicleService.update(editingVehicle._id, cleanedData);
                 toast.success('Vehicle updated successfully!');
             } else {
-                await vehicleService.create(formData);
+                await vehicleService.create(cleanedData);
                 toast.success('Vehicle added successfully!');
             }
             handleCloseModal();

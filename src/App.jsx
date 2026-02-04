@@ -1,6 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
+// Landing Page
+import Landing from './pages/landing/Landing';
+
 // Auth.js
 import Login from './pages/auth/Login';
 
@@ -39,6 +42,9 @@ function App() {
         }}
       />
       <Routes>
+        {/* Landing Page */}
+        <Route path="/" element={<Landing />} />
+
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />
 
@@ -59,9 +65,8 @@ function App() {
           <Route path="notifications" element={<DriverNotifications />} />
         </Route>
 
-        {/* Default redirect */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        {/* Fallback redirect */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
