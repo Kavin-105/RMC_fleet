@@ -6,7 +6,6 @@ const Driver = require('../models/Driver');
 exports.register = async (req, res) => {
     try {
         const { name, email, mobile, password, role } = req.body;
-
         const user = await User.create({
             name,
             email,

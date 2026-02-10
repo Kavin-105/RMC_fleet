@@ -1,6 +1,73 @@
 const Driver = require('../models/Driver');
 const User = require('../models/User');
 const Vehicle = require('../models/Vehicle');
+const axios = require('axios');
+const FormData = require('form-data');
+
+// ML Service URL for license OCR - use 127.0.0.1 to avoid IPv6 issues
+const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://127.0.0.1:5001';
+
+// @desc    Extract license number from image/PDF using ML OCR
+// @route   POST /api/drivers/extract-license
+exports.extractLicense = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please upload a license image or PDF'
+            });
+        }
+
+        // Create form data to send to ML service
+        const formData = new FormData();
+        formData.append('file', req.file.buffer, {
+            filename: req.file.originalname,
+            contentType: req.file.mimetype
+        });
+
+        // Call ML service for OCR extraction
+        const response = await axios.post(
+            `${ML_SERVICE_URL}/extract-license`,
+            formData,
+            {
+                headers: {
+                    ...formData.getHeaders()
+                },
+                timeout: 120000 // 120 second timeout for OCR processing (first run may download models)
+            }
+        );
+
+        if (response.data.success) {
+            res.status(200).json({
+                success: true,
+                data: {
+                    licenseNumber: response.data.licenseNumber,
+                    expiryDate: response.data.expiryDate
+                }
+            });
+        } else {
+            res.status(400).json({
+                success: false,
+                message: response.data.error || 'Could not extract license number',
+                rawText: response.data.rawText
+            });
+        }
+    } catch (err) {
+        console.error('License extraction error:', err.message);
+        
+        if (err.code === 'ECONNREFUSED') {
+            return res.status(503).json({
+                success: false,
+                message: 'ML service is not available. Please ensure the ML server is running.'
+            });
+        }
+        
+        res.status(500).json({
+            success: false,
+            message: err.response?.data?.error || err.message
+        });
+    }
+};
 
 // @desc    Get all drivers
 // @route   GET /api/drivers

@@ -24,7 +24,7 @@ router
 router
     .route('/:id')
     .get(getDocument)
-    .put(authorize('owner'), updateDocument)
+    .put(authorize('owner'), upload.single('document'), updateDocument)
     .delete(authorize('owner'), deleteDocument);
 
 router.get('/:id/file', getDocumentFile);

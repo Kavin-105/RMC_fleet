@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Plus, Search, User, Edit2, Trash2, Phone, FileText, Loader2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Plus, Search, User, Edit2, Trash2, Phone, FileText, Loader2, Upload, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import {
     Button,
@@ -26,6 +26,10 @@ export function Drivers() {
     const [statusFilter, setStatusFilter] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingDriver, setEditingDriver] = useState(null);
+    const [extractingLicense, setExtractingLicense] = useState(false);
+    const [licenseFile, setLicenseFile] = useState(null);
+    const [licenseExtracted, setLicenseExtracted] = useState(false);
+    const fileInputRef = useRef(null);
     const [formData, setFormData] = useState({
         name: '',
         mobile: '',
@@ -72,6 +76,7 @@ export function Drivers() {
                 status: driver.status,
                 password: ''
             });
+            setLicenseExtracted(true); // Already has license for editing
         } else {
             setEditingDriver(null);
             setFormData({
@@ -82,13 +87,17 @@ export function Drivers() {
                 status: 'Active',
                 password: 'driver123'
             });
+            setLicenseExtracted(false);
         }
+        setLicenseFile(null);
         setIsModalOpen(true);
     };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setEditingDriver(null);
+        setLicenseFile(null);
+        setLicenseExtracted(false);
     };
 
     const handleSubmit = async (e) => {
@@ -123,6 +132,52 @@ export function Drivers() {
         } catch (error) {
             console.error('Error deleting driver:', error);
             toast.error('Failed to delete driver');
+        }
+    };
+
+    const handleLicenseFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validate file type
+        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+        if (!allowedTypes.includes(file.type)) {
+            toast.error('Please upload a PDF or image file (JPG, PNG)');
+            return;
+        }
+
+        // Validate file size (5MB max)
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error('File size must be less than 5MB');
+            return;
+        }
+
+        setLicenseFile(file);
+        setExtractingLicense(true);
+        setLicenseExtracted(false);
+
+        try {
+            const response = await driverService.extractLicense(file);
+            
+            if (response.success && response.data.licenseNumber) {
+                setFormData(prev => ({
+                    ...prev,
+                    licenseNumber: response.data.licenseNumber,
+                    // Parse expiry date if available (format: DD-MM-YYYY to YYYY-MM-DD)
+                    licenseExpiry: response.data.expiryDate 
+                        ? response.data.expiryDate.split('-').reverse().join('-')
+                        : prev.licenseExpiry
+                }));
+                setLicenseExtracted(true);
+                toast.success('License number extracted successfully!');
+            } else {
+                toast.error(response.message || 'Could not extract license number. Please enter manually.');
+            }
+        } catch (error) {
+            console.error('License extraction error:', error);
+            toast.error(error.response?.data?.message || 'Failed to extract license number. Please enter manually.');
+        } finally {
+            setExtractingLicense(false);
         }
     };
 
@@ -327,6 +382,56 @@ export function Drivers() {
                         required
                     />
 
+                    {/* License Upload Section */}
+                    <div className="form-group">
+                        <label className="form-label">
+                            Upload Driver License <span style={{ color: 'var(--gray-500)', fontWeight: 'normal' }}>(Image or PDF)</span>
+                        </label>
+                        <div 
+                            className="license-upload-area"
+                            onClick={() => fileInputRef.current?.click()}
+                            style={{
+                                border: '2px dashed var(--gray-300)',
+                                borderRadius: 'var(--radius-md)',
+                                padding: 'var(--space-4)',
+                                textAlign: 'center',
+                                cursor: 'pointer',
+                                background: licenseExtracted ? 'var(--green-50)' : 'var(--gray-50)',
+                                borderColor: licenseExtracted ? 'var(--green-400)' : 'var(--gray-300)',
+                                transition: 'all 0.2s ease'
+                            }}
+                        >
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept=".pdf,.jpg,.jpeg,.png,image/*"
+                                onChange={handleLicenseFileChange}
+                                style={{ display: 'none' }}
+                            />
+                            {extractingLicense ? (
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-2)' }}>
+                                    <Loader2 size={20} className="spin" style={{ color: 'var(--primary-500)' }} />
+                                    <span style={{ color: 'var(--gray-600)' }}>Extracting license number...</span>
+                                </div>
+                            ) : licenseExtracted ? (
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-2)' }}>
+                                    <CheckCircle size={20} style={{ color: 'var(--green-500)' }} />
+                                    <span style={{ color: 'var(--green-600)' }}>License number extracted!</span>
+                                </div>
+                            ) : (
+                                <div>
+                                    <Upload size={24} style={{ color: 'var(--gray-400)', marginBottom: 'var(--space-2)' }} />
+                                    <p style={{ color: 'var(--gray-600)', margin: 0, fontSize: '0.875rem' }}>
+                                        {licenseFile ? licenseFile.name : 'Click to upload license image or PDF'}
+                                    </p>
+                                    <p style={{ color: 'var(--gray-400)', margin: 'var(--space-1) 0 0', fontSize: '0.75rem' }}>
+                                        License number will be extracted automatically using AI
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
                     <Input
                         label="License Number"
                         name="licenseNumber"
@@ -334,6 +439,7 @@ export function Drivers() {
                         onChange={handleChange}
                         placeholder="MH-1220220012345"
                         required
+                        disabled={extractingLicense}
                     />
 
                     <Input

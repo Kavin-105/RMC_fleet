@@ -35,6 +35,20 @@ export const driverService = {
     assignVehicle: async (driverId, vehicleId) => {
         const response = await api.put(`/drivers/${driverId}/assign-vehicle`, { vehicleId });
         return response.data;
+    },
+
+    // Extract license number from image/PDF using ML OCR
+    extractLicense: async (file) => {
+        const formData = new FormData();
+        formData.append('licenseFile', file);
+        
+        const response = await api.post('/drivers/extract-license', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+            timeout: 120000 // 120 second timeout for OCR processing
+        });
+        return response.data;
     }
 };
 
