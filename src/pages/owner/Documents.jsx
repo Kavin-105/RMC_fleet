@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Search, FileText, Truck, Calendar, Upload, Loader2, Eye, X } from 'lucide-react';
+import { Plus, Search, FileText, Truck, Calendar, Upload, Loader2, Eye, X, Pencil } from 'lucide-react';
 import toast from 'react-hot-toast';
 import {
     Button,
@@ -31,6 +31,7 @@ export function Documents() {
     const [searchTerm, setSearchTerm] = useState('');
     const [typeFilter, setTypeFilter] = useState('All');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingDocument, setEditingDocument] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
     const [filePreview, setFilePreview] = useState(null);
     const fileInputRef = useRef(null);
@@ -72,6 +73,7 @@ export function Documents() {
     });
 
     const handleOpenModal = () => {
+        setEditingDocument(null);
         setFormData({
             vehicle: '',
             type: '',
@@ -82,8 +84,21 @@ export function Documents() {
         setIsModalOpen(true);
     };
 
+    const handleEditDocument = (doc) => {
+        setEditingDocument(doc);
+        setFormData({
+            vehicle: doc.vehicle?._id || '',
+            type: doc.type || '',
+            expiryDate: doc.expiryDate ? new Date(doc.expiryDate).toISOString().split('T')[0] : ''
+        });
+        setSelectedFile(null);
+        setFilePreview(doc.fileName || null);
+        setIsModalOpen(true);
+    };
+
     const handleCloseModal = () => {
         setIsModalOpen(false);
+        setEditingDocument(null);
         setSelectedFile(null);
         setFilePreview(null);
     };
@@ -137,8 +152,14 @@ export function Documents() {
                 uploadData.append('document', selectedFile);
             }
 
-            await documentService.create(uploadData);
-            toast.success('Document added successfully!');
+            if (editingDocument) {
+                await documentService.update(editingDocument._id, uploadData);
+                toast.success('Document updated successfully!');
+            } else {
+                await documentService.create(uploadData);
+                toast.success('Document added successfully!');
+            }
+            
             handleCloseModal();
             fetchData();
         } catch (error) {
@@ -277,9 +298,18 @@ export function Documents() {
                             <Card key={doc._id} className={`document-card ${status.toLowerCase()}`}>
                                 <div className="document-card-header">
                                     <span className="document-type-icon">{typeIcons[doc.type] || '📄'}</span>
-                                    <Badge variant={status.toLowerCase()}>
-                                        {status}
-                                    </Badge>
+                                    <div className="document-card-header-right">
+                                        <button
+                                            className="document-edit-btn"
+                                            onClick={() => handleEditDocument(doc)}
+                                            title="Edit Document"
+                                        >
+                                            <Pencil size={14} />
+                                        </button>
+                                        <Badge variant={status.toLowerCase()}>
+                                            {status}
+                                        </Badge>
+                                    </div>
                                 </div>
 
                                 <h3 className="document-card-type">{doc.type}</h3>
@@ -326,16 +356,16 @@ export function Documents() {
                 </div>
             )}
 
-            {/* Add Document Modal */}
+            {/* Add/Edit Document Modal */}
             <Modal
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
-                title="Add New Document"
+                title={editingDocument ? 'Edit Document' : 'Add New Document'}
                 footer={
                     <>
                         <Button variant="secondary" onClick={handleCloseModal}>Cancel</Button>
                         <Button onClick={handleSubmit} disabled={saving}>
-                            {saving ? 'Saving...' : 'Add Document'}
+                            {saving ? 'Saving...' : (editingDocument ? 'Update Document' : 'Add Document')}
                         </Button>
                     </>
                 }
@@ -371,7 +401,9 @@ export function Documents() {
                     />
 
                     <div className="form-group">
-                        <label className="form-label">Upload Document (Optional)</label>
+                        <label className="form-label">
+                            {editingDocument ? 'Replace Document (Optional)' : 'Upload Document (Optional)'}
+                        </label>
                         <input
                             ref={fileInputRef}
                             type="file"
