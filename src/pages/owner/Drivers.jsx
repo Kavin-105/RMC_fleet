@@ -159,19 +159,24 @@ export function Drivers() {
         try {
             const response = await driverService.extractLicense(file);
             
-            if (response.success && response.data.licenseNumber) {
+            if (response.success && (response.data.licenseNumber || response.data.driverName)) {
                 setFormData(prev => ({
                     ...prev,
-                    licenseNumber: response.data.licenseNumber,
+                    name: response.data.driverName || prev.name,
+                    licenseNumber: response.data.licenseNumber || prev.licenseNumber,
                     // Parse expiry date if available (format: DD-MM-YYYY to YYYY-MM-DD)
                     licenseExpiry: response.data.expiryDate 
                         ? response.data.expiryDate.split('-').reverse().join('-')
                         : prev.licenseExpiry
                 }));
                 setLicenseExtracted(true);
-                toast.success('License number extracted successfully!');
+                const extractedFields = [];
+                if (response.data.driverName) extractedFields.push('name');
+                if (response.data.licenseNumber) extractedFields.push('license number');
+                if (response.data.expiryDate) extractedFields.push('expiry date');
+                toast.success(`Extracted ${extractedFields.join(', ')} successfully!`);
             } else {
-                toast.error(response.message || 'Could not extract license number. Please enter manually.');
+                toast.error(response.message || 'Could not extract license information. Please enter manually.');
             }
         } catch (error) {
             console.error('License extraction error:', error);

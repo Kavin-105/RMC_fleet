@@ -341,6 +341,71 @@ def extract_license_number(text):
     return None
 
 
+def extract_driver_name(text):
+    """Extract driver's name from OCR text"""
+    
+    text_upper = text.upper()
+    lines = [line.strip() for line in text_upper.split('\n') if line.strip()]
+    
+    # Common keywords that indicate name field
+    name_keywords = ['NAME', 'HOLDER', 'S/O', 'D/O', 'W/O', 'C/O']
+    
+    # Pattern 1: Look for "NAME" or "NAME:" followed by the actual name
+    name_pattern = re.search(r'NAME\s*:?\s*([A-Z\s]{3,50})', text_upper)
+    if name_pattern:
+        name = name_pattern.group(1).strip()
+        # Clean up the name - remove extra spaces and common artifacts
+        name = re.sub(r'\s+', ' ', name)
+        # Stop at common following fields
+        for stop_word in ['S/O', 'D/O', 'W/O', 'C/O', 'DOB', 'ADDRESS', 'ISSUE', 'VALIDITY']:
+            if stop_word in name:
+                name = name.split(stop_word)[0].strip()
+                break
+        if len(name) > 3 and len(name) < 50:
+            print(f"[OCR] Name extracted (pattern 1): {name}")
+            return name
+    
+    # Pattern 2: Look for line after "NAME" keyword
+    for i, line in enumerate(lines):
+        if 'NAME' in line and i + 1 < len(lines):
+            potential_name = lines[i + 1]
+            # Validate: should be mostly letters and spaces, no numbers
+            if re.match(r'^[A-Z\s]{3,50}$', potential_name) and not any(char.isdigit() for char in potential_name):
+                name = re.sub(r'\s+', ' ', potential_name).strip()
+                if len(name) > 3:
+                    print(f"[OCR] Name extracted (pattern 2): {name}")
+                    return name
+    
+    # Pattern 3: Look for name after S/O, D/O, W/O, C/O (Son of, Daughter of, Wife of, Care of)
+    relation_pattern = re.search(r'([A-Z\s]{3,50})\s+(?:S/O|D/O|W/O|C/O)', text_upper)
+    if relation_pattern:
+        name = relation_pattern.group(1).strip()
+        name = re.sub(r'\s+', ' ', name)
+        # Remove common prefixes
+        for prefix in ['NAME', 'HOLDER', 'LICENSE', 'DRIVING']:
+            name = name.replace(prefix, '').strip()
+        if len(name) > 3 and len(name) < 50:
+            print(f"[OCR] Name extracted (pattern 3): {name}")
+            return name
+    
+    # Pattern 4: Look for capitalized name-like text in first few lines (names usually appear early)
+    for line in lines[:10]:
+        # Skip lines with keywords, numbers, or special characters
+        if any(keyword in line for keyword in ['LICENSE', 'DRIVING', 'INDIA', 'FORM', 'ISSUE', 'VALIDITY', 'ADDRESS']):
+            continue
+        if any(char.isdigit() for char in line):
+            continue
+        # Check if line looks like a name (3-50 chars, mostly letters)
+        if re.match(r'^[A-Z\s]{3,50}$', line):
+            name = re.sub(r'\s+', ' ', line).strip()
+            if len(name.split()) >= 2:  # At least first and last name
+                print(f"[OCR] Name extracted (pattern 4): {name}")
+                return name
+    
+    print("[OCR] No driver name found")
+    return None
+
+
 def extract_expiry_date(text):
     """Extract license expiry date from OCR text"""
     from datetime import datetime
@@ -494,19 +559,22 @@ def extract_license():
                 ocr_time = time.time() - start_time
                 print(f"[OCR] Text extraction completed in {ocr_time:.2f}s")
             
-            # Extract license number and expiry
+            # Extract license number, expiry date, and driver name
             license_number = extract_license_number(extracted_text)
             expiry_date = extract_expiry_date(extracted_text)
+            driver_name = extract_driver_name(extracted_text)
             
             # Print results cleanly
             print(f"\n{'='*50}")
+            print(f"[RESULT] Driver Name: {driver_name or 'Not found'}")
             print(f"[RESULT] License Number: {license_number or 'Not found'}")
             print(f"[RESULT] Expiry Date: {expiry_date or 'Not found'}")
             print(f"{'='*50}\n")
             
-            if license_number:
+            if license_number or driver_name:
                 response = {
                     'success': True,
+                    'driverName': driver_name,
                     'licenseNumber': license_number,
                     'expiryDate': expiry_date,
                     'rawText': extracted_text[:500] if len(extracted_text) > 500 else extracted_text
@@ -514,7 +582,7 @@ def extract_license():
             else:
                 response = {
                     'success': False,
-                    'error': 'Could not extract license number. Please ensure the image is clear and try again.',
+                    'error': 'Could not extract license information. Please ensure the image is clear and try again.',
                     'rawText': extracted_text[:500] if len(extracted_text) > 500 else extracted_text
                 }
             

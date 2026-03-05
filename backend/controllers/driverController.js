@@ -41,6 +41,7 @@ exports.extractLicense = async (req, res) => {
             res.status(200).json({
                 success: true,
                 data: {
+                    driverName: response.data.driverName,
                     licenseNumber: response.data.licenseNumber,
                     expiryDate: response.data.expiryDate
                 }
