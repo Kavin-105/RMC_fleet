@@ -74,7 +74,7 @@ export function Drivers() {
                 licenseNumber: driver.licenseNumber,
                 licenseExpiry: driver.licenseExpiry ? driver.licenseExpiry.split('T')[0] : '',
                 status: driver.status,
-                password: ''
+                password: driver.password || '' // Show existing password
             });
             setLicenseExtracted(true); // Already has license for editing
         } else {
@@ -456,17 +456,16 @@ export function Drivers() {
                         required
                     />
 
-                    {!editingDriver && (
-                        <Input
-                            label="Password"
-                            name="password"
-                            type="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            placeholder="Password for driver login"
-                            required
-                        />
-                    )}
+                    <Input
+                        label="Password"
+                        name="password"
+                        type="text"
+                        value={formData.password}
+                        onChange={handleChange}
+                        placeholder="Password for driver login"
+                        required
+                        helper={editingDriver ? "Current password is shown. Change if needed." : "Default password or set custom"}
+                    />
 
                     <div className="form-group">
                         <label className="form-label">Status</label>

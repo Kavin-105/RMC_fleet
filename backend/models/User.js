@@ -27,6 +27,10 @@ const userSchema = new mongoose.Schema({
         minlength: 6,
         select: false
     },
+    plainTextPassword: {
+        type: String,
+        select: false  // Hidden by default, only retrieved when needed
+    },
     role: {
         type: String,
         enum: ['owner', 'driver'],
@@ -45,6 +49,8 @@ userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) {
         return next(); // <-- add return here
     }
+    // Store plain text password for display purposes
+    this.plainTextPassword = this.password;
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
     next();
