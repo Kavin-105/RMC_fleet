@@ -6,6 +6,7 @@ import Landing from './pages/landing/Landing';
 
 // Auth.js
 import Login from './pages/auth/Login';
+import ResetPassword from './pages/auth/ResetPassword';
 
 // Owner Pages
 import OwnerLayout from './pages/owner/OwnerLayout';
@@ -15,6 +16,8 @@ import Drivers from './pages/owner/Drivers';
 import Documents from './pages/owner/Documents';
 import Expenses from './pages/owner/Expenses';
 import OwnerNotifications from './pages/owner/Notifications';
+import EngineHealth from './pages/owner/EngineHealth';
+import FleetAnalytics from './pages/owner/FleetAnalytics';
 
 // Driver Pages
 import DriverLayout from './pages/driver/DriverLayout';
@@ -22,6 +25,7 @@ import DriverDashboard from './pages/driver/DriverDashboard';
 import DailyChecklist from './pages/driver/DailyChecklist';
 import DriverExpenses from './pages/driver/DriverExpenses';
 import DriverNotifications from './pages/driver/DriverNotifications';
+import DriverEngineHealth from './pages/driver/DriverEngineHealth';
 
 import './index.css';
 import './App.css';
@@ -48,6 +52,7 @@ function App() {
 
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         {/* Owner Routes */}
         <Route path="/owner" element={<OwnerLayout />}>
@@ -57,6 +62,8 @@ function App() {
           <Route path="documents" element={<Documents />} />
           <Route path="expenses" element={<Expenses />} />
           <Route path="notifications" element={<OwnerNotifications />} />
+          <Route path="engine-health" element={<EngineHealth />} />
+          <Route path="analytics" element={<FleetAnalytics />} />
         </Route>
 
         {/* Driver Routes */}
@@ -65,6 +72,7 @@ function App() {
           <Route path="checklist" element={<DailyChecklist />} />
           <Route path="expenses" element={<DriverExpenses />} />
           <Route path="notifications" element={<DriverNotifications />} />
+          <Route path="engine-health" element={<DriverEngineHealth />} />
         </Route>
 
         {/* Fallback redirect */}

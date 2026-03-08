@@ -225,6 +225,11 @@ export function Expenses() {
                                                         <Icon size={16} />
                                                     </div>
                                                     <span>{expense.type}</span>
+                                                    {expense.maintenanceCategory && (
+                                                        <span style={{ fontSize: '11px', color: 'var(--grey-500)', display: 'block' }}>
+                                                            {expense.maintenanceCategory}
+                                                        </span>
+                                                    )}
                                                 </div>
                                             </TableCell>
                                             <TableCell>{expense.vehicle?.vehicleNumber || 'N/A'}</TableCell>

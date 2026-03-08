@@ -18,7 +18,7 @@ print("EasyOCR model loaded successfully!")
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
-# Load the trained model
+# Load the trained models
 try:
     model = joblib.load("engine_health_model.pkl")
     feature_importance = joblib.load("feature_importance.pkl")
@@ -26,13 +26,24 @@ except:
     model = None
     feature_importance = None
 
+
+
 def analyze_parameters(data):
     """Analyze parameters and return issues with remedies"""
     rpm, oil_p, fuel_p, cool_p, oil_t, cool_t = data
     issues = []
     
     # Oil Pressure Analysis
-    if oil_p < 1.5:
+    if oil_p <= 0:
+        issues.append({
+            "severity": "CRITICAL",
+            "icon": "🔴",
+            "issue": "No Oil Pressure Detected",
+            "value": f"{oil_p:.2f} bar",
+            "remedy": "STOP ENGINE IMMEDIATELY! Complete oil pressure loss. Check oil level, oil pump failure, or sensor malfunction",
+            "color": "#dc3545"
+        })
+    elif oil_p < 1.5:
         issues.append({
             "severity": "CRITICAL",
             "icon": "🔴",
@@ -70,7 +81,16 @@ def analyze_parameters(data):
             "remedy": "Change oil and filter, check oil cooler efficiency, reduce engine load",
             "color": "#fd7e14"
         })
-    elif oil_t < 70:
+    elif oil_t < 40:
+        issues.append({
+            "severity": "CRITICAL",
+            "icon": "🔴",
+            "issue": "Abnormally Low Oil Temperature",
+            "value": f"{oil_t:.1f}°C",
+            "remedy": "Possible sensor failure or engine not running. Check oil temperature sensor and wiring",
+            "color": "#dc3545"
+        })
+    elif oil_t < 60:
         issues.append({
             "severity": "MEDIUM",
             "icon": "🟡",
@@ -99,6 +119,24 @@ def analyze_parameters(data):
             "remedy": "Flush and replace coolant, check radiator fans, inspect thermostat",
             "color": "#fd7e14"
         })
+    elif cool_t < 40:
+        issues.append({
+            "severity": "CRITICAL",
+            "icon": "🔴",
+            "issue": "Abnormally Low Coolant Temperature",
+            "value": f"{cool_t:.1f}°C",
+            "remedy": "Possible sensor failure or thermostat stuck open. Check coolant temperature sensor and thermostat",
+            "color": "#dc3545"
+        })
+    elif cool_t < 60:
+        issues.append({
+            "severity": "MEDIUM",
+            "icon": "🟡",
+            "issue": "Low Coolant Temperature",
+            "value": f"{cool_t:.1f}°C",
+            "remedy": "Allow engine to warm up properly, check thermostat operation, verify heater function",
+            "color": "#ffc107"
+        })
     
     # Coolant Pressure Analysis
     if cool_p < 1.0:
@@ -121,7 +159,16 @@ def analyze_parameters(data):
         })
     
     # Fuel Pressure Analysis
-    if fuel_p < 5:
+    if fuel_p <= 0:
+        issues.append({
+            "severity": "CRITICAL",
+            "icon": "🔴",
+            "issue": "No Fuel Pressure Detected",
+            "value": f"{fuel_p:.2f} bar",
+            "remedy": "Engine cannot run without fuel pressure. Check fuel pump, fuel tank level, and fuel lines",
+            "color": "#dc3545"
+        })
+    elif fuel_p < 5:
         issues.append({
             "severity": "HIGH",
             "icon": "🟠",
@@ -158,6 +205,15 @@ def analyze_parameters(data):
             "value": f"{rpm:.0f} RPM",
             "remedy": "Reduce load, optimize driving habits, shift to higher gear if applicable",
             "color": "#ffc107"
+        })
+    elif rpm < 200:
+        issues.append({
+            "severity": "CRITICAL",
+            "icon": "🔴",
+            "issue": "Critically Low RPM / Engine Stall Risk",
+            "value": f"{rpm:.0f} RPM",
+            "remedy": "Engine may not be running or about to stall. Check ignition system, fuel supply, and idle control valve",
+            "color": "#dc3545"
         })
     elif rpm < 400:
         issues.append({
@@ -196,24 +252,36 @@ def predict():
         oil_t = float(data.get('oil_temp', 0))
         cool_t = float(data.get('coolant_temp', 0))
         
-        # Prepare input for model
-        input_data = np.array([[rpm, oil_p, fuel_p, cool_p, oil_t, cool_t]])
+        # Prepare input for model (use DataFrame with feature names to avoid warning)
+        feature_names = ['Engine rpm', 'Lub oil pressure', 'Fuel pressure', 'Coolant pressure', 'lub oil temp', 'Coolant temp']
+        input_data = pd.DataFrame([[rpm, oil_p, fuel_p, cool_p, oil_t, cool_t]], columns=feature_names)
+        
+        # Analyze parameters for issues FIRST
+        issues = analyze_parameters([rpm, oil_p, fuel_p, cool_p, oil_t, cool_t])
+        
+        # Count critical and high severity issues
+        critical_count = sum(1 for i in issues if i['severity'] == 'CRITICAL')
+        high_count = sum(1 for i in issues if i['severity'] == 'HIGH')
         
         # Make prediction
         prediction = model.predict(input_data)[0]
         probability = model.predict_proba(input_data)[0]
         
-        # Get status
-        status = "HEALTHY" if prediction == 1 else "AT RISK"
-        confidence = float(probability[1]) if prediction == 1 else float(probability[0])
-        
-        # Analyze parameters for issues
-        issues = analyze_parameters([rpm, oil_p, fuel_p, cool_p, oil_t, cool_t])
+        # Override model prediction when critical/high issues are detected
+        if critical_count > 0:
+            status = "AT RISK"
+            confidence = max(90.0, float(probability[0]) * 100) if prediction == 1 else float(probability[0]) * 100
+        elif high_count > 0:
+            status = "AT RISK"
+            confidence = max(75.0, float(probability[0]) * 100) if prediction == 1 else float(probability[0]) * 100
+        else:
+            status = "HEALTHY" if prediction == 1 else "AT RISK"
+            confidence = float(probability[1]) * 100 if prediction == 1 else float(probability[0]) * 100
         
         # Prepare response
         response = {
             'status': status,
-            'confidence': round(confidence * 100, 1),
+            'confidence': round(confidence, 1),
             'prediction': int(prediction),
             'issues': issues,
             'parameters': {

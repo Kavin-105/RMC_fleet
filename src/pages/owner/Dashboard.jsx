@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Truck, Users, FileWarning, DollarSign, Clock, AlertTriangle, Loader2 } from 'lucide-react';
+import { Truck, Users, FileWarning, DollarSign, Clock, AlertTriangle, Loader2, CheckCircle } from 'lucide-react';
 import { Card, StatsCard, Badge, Button } from '../../components/ui';
 import { vehicleService, driverService, documentService, expenseService } from '../../services';
 import './Dashboard.css';
@@ -16,6 +16,7 @@ export function Dashboard() {
     });
     const [pendingExpenses, setPendingExpenses] = useState([]);
     const [expiringDocs, setExpiringDocs] = useState([]);
+    const [recentActivities, setRecentActivities] = useState([]);
 
     useEffect(() => {
         fetchDashboardData();
@@ -47,6 +48,35 @@ export function Dashboard() {
 
             setPendingExpenses(expenses.slice(0, 5));
             setExpiringDocs(expDocs.slice(0, 3));
+
+            // Build real recent activity from expenses
+            const activities = [];
+            expenses.slice(0, 3).forEach(e => {
+                activities.push({
+                    icon: <DollarSign size={16} />,
+                    text: `${e.driver?.name || 'Driver'} submitted ₹${e.amount?.toLocaleString()} ${e.type} expense`,
+                    time: new Date(e.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }),
+                    color: '#f59e0b'
+                });
+            });
+            expDocs.slice(0, 2).forEach(d => {
+                const daysLeft = Math.ceil((new Date(d.expiryDate) - new Date()) / (1000 * 60 * 60 * 24));
+                activities.push({
+                    icon: <FileWarning size={16} />,
+                    text: `${d.type} for ${d.vehicle?.vehicleNumber || 'vehicle'} ${daysLeft < 0 ? 'has expired' : `expires in ${daysLeft} days`}`,
+                    time: new Date(d.expiryDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }),
+                    color: daysLeft < 0 ? '#ef4444' : '#f59e0b'
+                });
+            });
+            if (activities.length === 0) {
+                activities.push({
+                    icon: <CheckCircle size={16} />,
+                    text: 'All caught up! No recent activity.',
+                    time: 'Now',
+                    color: '#10b981'
+                });
+            }
+            setRecentActivities(activities);
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
         } finally {
@@ -184,15 +214,17 @@ export function Dashboard() {
                     <h3>Recent Activity</h3>
                 </div>
                 <div className="activity-list">
-                    <div className="activity-item">
-                        <div className="activity-icon">
-                            <Clock size={16} />
+                    {recentActivities.map((activity, index) => (
+                        <div key={index} className="activity-item">
+                            <div className="activity-icon" style={{ color: activity.color }}>
+                                {activity.icon}
+                            </div>
+                            <div className="activity-content">
+                                <p>{activity.text}</p>
+                                <span>{activity.time}</span>
+                            </div>
                         </div>
-                        <div className="activity-content">
-                            <p>Dashboard loaded with live data</p>
-                            <span>Just now</span>
-                        </div>
-                    </div>
+                    ))}
                 </div>
             </Card>
         </div>

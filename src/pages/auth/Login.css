@@ -162,3 +162,96 @@
 .demo-credentials-item strong {
     color: var(--grey-900);
 }
+
+/* Error Message */
+.login-error-message {
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    background-color: var(--red-50);
+    border: 1px solid var(--red-200);
+    border-radius: var(--radius-lg);
+    color: var(--red-600);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+/* Submit Button */
+.login-submit-btn {
+    margin-top: var(--space-4);
+}
+
+.login-spinner {
+    margin-right: 8px;
+}
+
+/* Forgot Password */
+.login-forgot-wrapper {
+    text-align: center;
+    margin-top: var(--space-3);
+}
+
+.login-forgot-btn {
+    background: none;
+    border: none;
+    color: var(--blue-600);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    text-decoration: underline;
+    transition: color var(--transition-fast);
+}
+
+.login-forgot-btn:hover {
+    color: var(--blue-700);
+}
+
+.login-forgot-icon {
+    margin-right: 4px;
+    vertical-align: middle;
+}
+
+/* Forgot Password Modal */
+.login-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.login-modal-content {
+    background: var(--white);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-8);
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.login-modal-title {
+    margin: 0 0 var(--space-2) 0;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--grey-900);
+}
+
+.login-modal-desc {
+    margin: 0 0 var(--space-5) 0;
+    color: var(--grey-500);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+}
+
+.login-modal-actions {
+    display: flex;
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+}
+
+.login-modal-btn {
+    flex: 1;
+}

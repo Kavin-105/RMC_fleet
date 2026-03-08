@@ -10,7 +10,7 @@ import {
     LogOut,
     Menu,
     X,
-    Building2
+    Activity
 } from 'lucide-react';
 import { notificationService } from '../../services';
 import './DriverLayout.css';
@@ -19,6 +19,7 @@ const navItems = [
     { path: '/driver', icon: Home, label: 'Dashboard', end: true },
     { path: '/driver/checklist', icon: ClipboardCheck, label: 'Daily Checklist' },
     { path: '/driver/expenses', icon: Receipt, label: 'Expenses' },
+    { path: '/driver/engine-health', icon: Activity, label: 'Vehicle Health' },
     { path: '/driver/notifications', icon: Bell, label: 'Notifications' },
 ];
 

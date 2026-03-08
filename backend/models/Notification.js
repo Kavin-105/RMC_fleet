@@ -8,7 +8,7 @@ const notificationSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['document_expiring', 'document_expired', 'license_expiring', 'license_expired', 'general'],
+        enum: ['document_expiring', 'document_expired', 'license_expiring', 'license_expired', 'engine_prediction', 'general'],
         required: true
     },
     title: {

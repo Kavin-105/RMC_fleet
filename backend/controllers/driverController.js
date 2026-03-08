@@ -138,10 +138,16 @@ exports.createDriver = async (req, res) => {
         req.body.owner = req.user.id;
 
         // Create user account for driver
+        if (!req.body.password || req.body.password.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: 'Password is required and must be at least 6 characters'
+            });
+        }
         const user = await User.create({
             name: req.body.name,
             mobile: req.body.mobile,
-            password: req.body.password || 'driver123', // Default password
+            password: req.body.password,
             role: 'driver'
         });
 
