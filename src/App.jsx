@@ -14,6 +14,7 @@ import Vehicles from './pages/owner/Vehicles';
 import Drivers from './pages/owner/Drivers';
 import Documents from './pages/owner/Documents';
 import Expenses from './pages/owner/Expenses';
+import OwnerNotifications from './pages/owner/Notifications';
 
 // Driver Pages
 import DriverLayout from './pages/driver/DriverLayout';
@@ -55,6 +56,7 @@ function App() {
           <Route path="drivers" element={<Drivers />} />
           <Route path="documents" element={<Documents />} />
           <Route path="expenses" element={<Expenses />} />
+          <Route path="notifications" element={<OwnerNotifications />} />
         </Route>
 
         {/* Driver Routes */}
