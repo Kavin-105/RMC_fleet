@@ -6,7 +6,8 @@ import {
     FileText,
     Receipt,
     LogOut,
-    Building2
+    Building2,
+    Bell
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -16,6 +17,7 @@ const navItems = [
     { path: '/owner/drivers', icon: Users, label: 'Drivers' },
     { path: '/owner/documents', icon: FileText, label: 'Documents' },
     { path: '/owner/expenses', icon: Receipt, label: 'Expenses' },
+    { path: '/owner/notifications', icon: Bell, label: 'Notifications' },
 ];
 
 export function Sidebar({ isOpen, onClose }) {
