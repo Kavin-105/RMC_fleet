@@ -9,7 +9,7 @@ mongoose.connect(process.env.MONGO_URI).then(async () => {
     console.log(`Cleared ${result.deletedCount} old notifications.`);
     console.log('Now restart the server to trigger fresh expiry check with emails.');
     await mongoose.disconnect();
-    process.exit(0);                                                                      
+    process.exit(0);                                                                       
 }).catch(e => {
     console.error(e);
     process.exit(1);

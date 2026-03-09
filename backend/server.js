@@ -17,34 +17,37 @@ const app = express();
 // Body parser
 app.use(express.json({ limit: '10mb' }));
 
-// Rate limiting
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 200
-});
-app.use('/api/', limiter);
-
-const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 10,
-    message: { success: false, message: 'Too many login attempts, please try again after 15 minutes' }
-});
-app.use('/api/auth/login', authLimiter);
-
-// Enable CORS
-const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173').split(',');
+// Enable CORS — MUST be before rate limiting so all responses get CORS headers
 app.use(cors({
     origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(null, true); // Allow in development
-        }
+        // Allow requests with no origin (mobile apps, Postman, etc.)
+        if (!origin) return callback(null, true);
+        // Allow all in development
+        callback(null, true);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Handle preflight requests explicitly
+app.options('*', cors());
+
+// Rate limiting — after CORS so rate-limited responses still have CORS headers
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 200,
+    skip: (req) => req.method === 'OPTIONS' // Don't count preflight requests
+});
+app.use('/api/', limiter);
+
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 20,
+    message: { success: false, message: 'Too many login attempts, please try again after 15 minutes' },
+    skip: (req) => req.method === 'OPTIONS'
+});
+app.use('/api/auth/login', authLimiter);
 
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -91,6 +94,15 @@ const server = app.listen(PORT, () => {
 
     // Initialize cron jobs for document expiry notifications
     initCronJobs();
+});
+
+server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+        console.error(`Port ${PORT} is already in use. Please stop the other process or use a different port.`);
+        process.exit(1);
+    } else {
+        console.error('Server error:', err.message);
+    }
 });
 
 // Keep connections alive
