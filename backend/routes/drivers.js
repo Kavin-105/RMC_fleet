@@ -6,12 +6,17 @@ const {
     createDriver,
     updateDriver,
     deleteDriver,
-    assignVehicle
+    assignVehicle,
+    extractLicense
 } = require('../controllers/driverController');
 const { protect, authorize } = require('../middleware/auth');
+const upload = require('../middleware/upload');
 
 router.use(protect);
 router.use(authorize('owner'));
+
+// License OCR extraction route (must be before /:id routes)
+router.post('/extract-license', upload.single('licenseFile'), extractLicense);
 
 router
     .route('/')

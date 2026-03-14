@@ -98,6 +98,36 @@
     margin-bottom: var(--space-3);
 }
 
+.document-card-header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.document-edit-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--blue-50);
+    border: 1px solid var(--blue-200);
+    border-radius: var(--radius-md);
+    color: var(--blue-600);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.document-edit-btn:hover {
+    background: var(--blue-100);
+    border-color: var(--blue-300);
+    transform: scale(1.05);
+}
+
+.document-edit-btn:active {
+    transform: scale(0.95);
+}
+
 .document-type-icon {
     font-size: 28px;
 }

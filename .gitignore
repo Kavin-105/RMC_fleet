@@ -8,9 +8,17 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+backend/node_modules
 dist
 dist-ssr
 *.local
+
+# Python virtual environment
+ML_model/ocr_env/
+ocr_env/
+__pycache__/
+*.pyc
+*.pkl
 
 # Editor directories and files
 .vscode/*

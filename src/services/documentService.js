@@ -31,7 +31,11 @@ export const documentService = {
 
     // Update document
     update: async (id, documentData) => {
-        const response = await api.put(`/documents/${id}`, documentData);
+        const response = await api.put(`/documents/${id}`, documentData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
         return response.data;
     },
 

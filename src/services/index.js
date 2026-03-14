@@ -5,3 +5,4 @@ export { driverService } from './driverService';
 export { documentService } from './documentService';
 export { expenseService } from './expenseService';
 export { checklistService } from './checklistService';
+export { notificationService } from './notificationService';

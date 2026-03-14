@@ -112,6 +112,13 @@ exports.updateDocument = async (req, res) => {
             });
         }
 
+        // If new file was uploaded, convert to Base64 and save in DB
+        if (req.file) {
+            req.body.fileName = req.file.originalname;
+            req.body.fileData = req.file.buffer.toString('base64');
+            req.body.fileContentType = req.file.mimetype;
+        }
+
         document = await Document.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true

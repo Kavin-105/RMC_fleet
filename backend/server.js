@@ -34,6 +34,10 @@ const drivers = require('./routes/drivers');
 const documents = require('./routes/documents');
 const expenses = require('./routes/expenses');
 const checklists = require('./routes/checklists');
+const notifications = require('./routes/notifications');
+
+// Cron jobs
+const { initCronJobs } = require('./jobs/expiryChecker');
 
 // Mount routers
 app.use('/api/auth', auth);
@@ -42,6 +46,7 @@ app.use('/api/drivers', drivers);
 app.use('/api/documents', documents);
 app.use('/api/expenses', expenses);
 app.use('/api/checklists', checklists);
+app.use('/api/notifications', notifications);
 
 // Health check route
 app.get('/api/health', (req, res) => {
@@ -61,6 +66,9 @@ const PORT = process.env.PORT || 5000;
 
 const server = app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+
+    // Initialize cron jobs for document expiry notifications
+    initCronJobs();
 });
 
 // Handle unhandled promise rejections
