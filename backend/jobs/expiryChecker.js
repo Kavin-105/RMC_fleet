@@ -27,6 +27,7 @@ const checkDocumentExpiry = async () => {
 
         let expiringCount = 0;
         let expiredCount = 0;
+        let newNotifications = 0;
 
         for (const doc of documents) {
             const expiryDate = new Date(doc.expiryDate);
@@ -56,6 +57,8 @@ const checkDocumentExpiry = async () => {
 
             // === EXPIRING SOON (within 30 days) - Notify Owner ===
             if (daysUntilExpiry >= 0 && daysUntilExpiry <= 30) {
+                expiringCount++;
+
                 // Check if we already sent notification today for this doc
                 const existingNotification = await Notification.findOne({
                     recipient: ownerId,
@@ -65,7 +68,7 @@ const checkDocumentExpiry = async () => {
                 });
 
                 if (!existingNotification) {
-                    expiringCount++;
+                    newNotifications++;
 
                     const daysText = daysUntilExpiry === 0
                         ? 'Today'
@@ -106,6 +109,7 @@ const checkDocumentExpiry = async () => {
 
             // === EXPIRED - Notify Owner + Driver ===
             if (daysUntilExpiry < 0) {
+                expiredCount++;
                 const daysSinceExpiry = Math.abs(daysUntilExpiry);
 
                 // Check if we already sent expired notification today
@@ -130,7 +134,7 @@ const checkDocumentExpiry = async () => {
                 );
 
                 if (shouldNotify) {
-                    expiredCount++;
+                    newNotifications++;
 
                     const title = !hasAnyNotification
                         ? `${doc.type} Has Expired!`
@@ -193,7 +197,7 @@ const checkDocumentExpiry = async () => {
             }
         }
 
-        console.log(`[Cron] Document expiry check complete. Expiring: ${expiringCount}, Expired: ${expiredCount}`);
+        console.log(`[Cron] Document expiry check complete. Expiring: ${expiringCount}, Expired: ${expiredCount}, New notifications: ${newNotifications}`);
     } catch (error) {
         console.error('[Cron] Error in document expiry check:', error.message);
     }
@@ -268,12 +272,12 @@ const initCronJobs = () => {
         checkLicenseExpiry();
     });
 
-    // Also run once on server startup (after 10 seconds to let DB connect)
+    // Also run once on server startup (after 30 seconds to let DB stabilize)
     setTimeout(() => {
         console.log('[Cron] Running initial document expiry check on startup...');
         checkDocumentExpiry();
         checkLicenseExpiry();
-    }, 10000);
+    }, 30000);
 
     console.log('[Cron] Document expiry cron jobs initialized. Checks run daily at 8:00 AM.');
 };

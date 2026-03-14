@@ -28,6 +28,7 @@
   --blue-50: #EFF6FF;
   --blue-100: #DBEAFE;
   --blue-200: #BFDBFE;
+  --blue-300: #93C5FD;
   --blue-400: #60A5FA;
   --blue-500: #3B82F6;
   --blue-600: #2563EB;
@@ -36,18 +37,27 @@
   /* Status Colors */
   --green-50: #F0FDF4;
   --green-100: #DCFCE7;
+  --green-200: #BBF7D0;
+  --green-400: #4ADE80;
   --green-500: #22C55E;
   --green-600: #16A34A;
+  --green-700: #15803D;
   
   --yellow-50: #FEFCE8;
   --yellow-100: #FEF9C3;
+  --yellow-200: #FDE68A;
   --yellow-500: #EAB308;
   --yellow-600: #CA8A04;
+  --yellow-700: #A16207;
+  --yellow-800: #854D0E;
   
   --red-50: #FEF2F2;
   --red-100: #FEE2E2;
+  --red-200: #FECACA;
+  --red-300: #FCA5A5;
   --red-500: #EF4444;
   --red-600: #DC2626;
+  --red-700: #B91C1C;
   
   /* ===== TYPOGRAPHY ===== */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

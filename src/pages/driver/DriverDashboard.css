@@ -258,3 +258,184 @@
     color: var(--grey-900);
     margin-bottom: 2px;
 }
+
+/* ===== DRIVER STATS ROW ===== */
+.driver-stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+
+.driver-stat-card {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--grey-200);
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.driver-stat-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.driver-stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.driver-stat-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--grey-900);
+    line-height: 1.2;
+}
+
+.driver-stat-label {
+    font-size: 11px;
+    color: var(--grey-500);
+    font-weight: 500;
+}
+
+/* ===== DRIVER ACTION - ORANGE ===== */
+.driver-action-icon.orange {
+    background: #fff7ed;
+    color: #f97316;
+}
+
+/* ===== DRIVER ANALYTICS SECTION ===== */
+.driver-analytics-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.driver-analytics-card {
+    padding: var(--space-4) !important;
+}
+
+.driver-analytics-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--grey-800);
+    margin: 0 0 var(--space-4);
+}
+
+/* Expense Type Rows */
+.driver-expense-types {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.driver-type-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.driver-type-left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 13px;
+    color: var(--grey-700);
+    font-weight: 500;
+    min-width: 100px;
+    flex-shrink: 0;
+}
+
+.driver-type-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.driver-type-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex: 1;
+}
+
+.driver-type-bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--grey-100);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.driver-type-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+
+.driver-type-amount {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--grey-700);
+    min-width: 70px;
+    text-align: right;
+}
+
+/* Monthly Chart */
+.driver-monthly-chart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    gap: var(--space-3);
+    padding-top: var(--space-4);
+    min-height: 160px;
+}
+
+.driver-month-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    flex: 1;
+}
+
+.driver-month-amount {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--grey-600);
+}
+
+.driver-month-bar {
+    width: 32px;
+    background: linear-gradient(180deg, #3b82f6, #60a5fa);
+    border-radius: 6px 6px 2px 2px;
+    transition: height 0.4s ease;
+}
+
+.driver-month-label {
+    font-size: 11px;
+    color: var(--grey-500);
+    font-weight: 600;
+}
+
+@media (max-width: 480px) {
+    .driver-stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .driver-analytics-section {
+        grid-template-columns: 1fr;
+    }
+}
