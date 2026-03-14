@@ -41,6 +41,31 @@ export const vehicleService = {
     getDetails: async (id) => {
         const response = await api.get(`/vehicles/${id}/details`);
         return response.data;
+    },
+
+    // Predict engine health
+    predictEngineHealth: async (vehicleId, engineData) => {
+        const response = await api.post(`/vehicles/${vehicleId}/engine-health`, engineData);
+        return response.data;
+    },
+
+    // Get vehicle health score (automated)
+    getHealthScore: async (vehicleId) => {
+        const response = await api.get(`/vehicles/${vehicleId}/health-score`);
+        return response.data;
+    },
+
+    // Get fleet analytics
+    getFleetAnalytics: async () => {
+        const response = await api.get('/vehicles/analytics/summary');
+        return response.data;
+    },
+
+
+    // Get last prediction result for a vehicle
+    getLastPrediction: async (vehicleId) => {
+        const response = await api.get(`/vehicles/${vehicleId}/last-prediction`);
+        return response.data;
     }
 };
 

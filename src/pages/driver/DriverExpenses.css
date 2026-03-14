@@ -7,6 +7,9 @@
     border: 1px solid var(--grey-200);
     padding: var(--space-5);
     margin-bottom: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
 }
 
 .expense-form-card h3 {
@@ -73,7 +76,6 @@
 /* Amount Input */
 .amount-input-container {
     position: relative;
-    margin-bottom: var(--space-4);
 }
 
 .amount-input-container .currency-symbol {
@@ -125,7 +127,6 @@
     color: var(--grey-600);
     cursor: pointer;
     transition: all var(--transition-fast);
-    margin-top: var(--space-4);
 }
 
 .photo-upload-btn:hover {
@@ -146,7 +147,6 @@
 .expense-form-actions {
     display: flex;
     gap: var(--space-3);
-    margin-top: var(--space-4);
 }
 
 .expense-form-actions button {
@@ -230,7 +230,6 @@
 .file-preview-container {
     position: relative;
     width: 100%;
-    margin-top: var(--space-4);
     border: 2px solid var(--grey-200);
     border-radius: var(--radius-lg);
     overflow: hidden;

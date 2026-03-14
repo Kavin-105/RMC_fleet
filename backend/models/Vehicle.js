@@ -57,6 +57,28 @@ const vehicleSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
+    },
+    lastPrediction: {
+        status: String,
+        confidence: Number,
+        issues: [{
+            severity: String,
+            icon: String,
+            issue: String,
+            value: String,
+            remedy: String,
+            color: String
+        }],
+        parameters: {
+            rpm: Number,
+            oil_pressure: Number,
+            fuel_pressure: Number,
+            coolant_pressure: Number,
+            oil_temp: Number,
+            coolant_temp: Number
+        },
+        predictedAt: { type: Date, default: Date.now },
+        predictedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
     }
 }, {
     timestamps: true

@@ -1,0 +1,314 @@
+/* Driver Engine Health Page */
+.driver-engine-health .spin {
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.deh-vehicle-banner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #1e40af, #3b82f6);
+    border-radius: 14px;
+    color: #fff;
+    margin-bottom: 24px;
+}
+.deh-vehicle-banner-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.deh-vehicle-banner-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+.deh-vehicle-banner h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+.deh-vehicle-banner p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    opacity: 0.85;
+}
+.deh-vehicle-status {
+    padding: 4px 12px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+/* Health Score Card */
+.deh-score-card {
+    padding: 24px;
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid var(--grey-200, #e2e8f0);
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.deh-score-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--grey-800, #1e293b);
+}
+.deh-score-body {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+.deh-score-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 22px;
+    color: #fff;
+    flex-shrink: 0;
+}
+.deh-score-info {
+    flex: 1;
+}
+.deh-score-info .status-label {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 4px;
+}
+.deh-score-info .score-details {
+    font-size: 13px;
+    color: var(--grey-500, #64748b);
+    margin: 0;
+}
+.deh-recommendation {
+    padding: 10px 14px;
+    background: var(--blue-50, #eff6ff);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--blue-700, #1d4ed8);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Prediction Form */
+.deh-predict-card {
+    padding: 24px;
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid var(--grey-200, #e2e8f0);
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.deh-predict-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--grey-800, #1e293b);
+    margin: 0 0 4px;
+}
+.deh-predict-subtitle {
+    font-size: 13px;
+    color: var(--grey-500, #64748b);
+    margin: 0 0 20px;
+}
+.deh-sensor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+}
+.deh-sensor-input {
+    padding: 14px;
+    background: var(--grey-50, #f8fafc);
+    border-radius: 10px;
+    border: 1px solid var(--grey-200, #e2e8f0);
+}
+.deh-sensor-input label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--grey-600, #475569);
+    margin-bottom: 8px;
+}
+.deh-sensor-input input {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--grey-300, #cbd5e1);
+    font-size: 15px;
+    font-weight: 600;
+    outline: none;
+    box-sizing: border-box;
+}
+.deh-sensor-input input:focus {
+    border-color: var(--blue-400, #60a5fa);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+}
+.deh-sensor-range {
+    font-size: 11px;
+    color: var(--grey-400, #94a3b8);
+    margin-top: 4px;
+}
+.deh-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* Result */
+.deh-result-card {
+    padding: 24px;
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid var(--grey-200, #e2e8f0);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.deh-result-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 16px;
+}
+.deh-result-status {
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.deh-result-status .status-text {
+    font-size: 32px;
+    font-weight: 800;
+}
+.deh-result-status .confidence-text {
+    font-size: 14px;
+    margin-top: 4px;
+}
+.deh-issue-item {
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: #fff;
+    border: 1px solid;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    margin-bottom: 10px;
+}
+.deh-issue-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.deh-issue-top .severity {
+    font-weight: 700;
+}
+.deh-issue-top .value {
+    font-size: 13px;
+    color: var(--grey-500, #64748b);
+}
+.deh-issue-remedy {
+    font-size: 13px;
+    color: var(--grey-600, #475569);
+}
+.deh-all-good {
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    background: #ecfdf5;
+    color: #10b981;
+}
+.deh-all-good svg {
+    margin-bottom: 8px;
+}
+.deh-all-good p {
+    margin: 0;
+    font-weight: 600;
+}
+
+/* No vehicle state */
+.deh-no-vehicle {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--grey-500, #64748b);
+}
+.deh-no-vehicle svg {
+    opacity: 0.4;
+    margin-bottom: 12px;
+}
+.deh-no-vehicle h3 {
+    margin: 0 0 6px;
+    color: var(--grey-700, #334155);
+}
+.deh-no-vehicle p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Fuel Efficiency Results */
+.deh-fuel-result-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.deh-fuel-stat {
+    padding: 16px;
+    text-align: center;
+    border-radius: 12px;
+    background: var(--grey-50, #f8fafc);
+    border: 1px solid var(--grey-200, #e2e8f0);
+}
+.deh-fuel-stat-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--grey-800, #1e293b);
+    line-height: 1.2;
+}
+.deh-fuel-stat-label {
+    font-size: 12px;
+    color: var(--grey-500, #64748b);
+    font-weight: 600;
+    margin-top: 4px;
+}
+.deh-fuel-tips {
+    padding: 16px;
+    background: #fffbeb;
+    border-radius: 12px;
+    border: 1px solid #fef3c7;
+}
+.deh-fuel-tip-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 6px 0;
+    font-size: 13px;
+    color: var(--grey-600, #475569);
+}

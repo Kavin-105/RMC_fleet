@@ -10,24 +10,44 @@ import {
     LogOut,
     Menu,
     X,
-    Building2
+    Activity
 } from 'lucide-react';
+import { notificationService } from '../../services';
 import './DriverLayout.css';
 
 const navItems = [
     { path: '/driver', icon: Home, label: 'Dashboard', end: true },
     { path: '/driver/checklist', icon: ClipboardCheck, label: 'Daily Checklist' },
     { path: '/driver/expenses', icon: Receipt, label: 'Expenses' },
+    { path: '/driver/engine-health', icon: Activity, label: 'Vehicle Health' },
     { path: '/driver/notifications', icon: Bell, label: 'Notifications' },
 ];
 
 export function DriverLayout() {
     const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
 
     // Get driver info from localStorage
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const driverName = user.name || 'Driver';
+
+    // Fetch unread notification count
+    useEffect(() => {
+        const fetchUnreadCount = async () => {
+            try {
+                const response = await notificationService.getUnreadCount();
+                setUnreadCount(response.data?.count || 0);
+            } catch (error) {
+                console.error('Error fetching unread count:', error);
+            }
+        };
+
+        fetchUnreadCount();
+        // Refresh count every 60 seconds
+        const interval = setInterval(fetchUnreadCount, 60000);
+        return () => clearInterval(interval);
+    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem('user');
@@ -112,7 +132,9 @@ export function DriverLayout() {
                             onClick={() => navigate('/driver/notifications')}
                         >
                             <Bell size={22} />
-                            <span className="driver-header-badge" />
+                            {unreadCount > 0 && (
+                                <span className="driver-header-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
+                            )}
                         </button>
                     </div>
                 </header>

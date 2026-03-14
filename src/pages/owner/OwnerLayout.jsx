@@ -1,17 +1,22 @@
-import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { Sidebar } from '../../components/layout/Sidebar';
 import { Header } from '../../components/layout/Header';
+import { authService } from '../../services';
 import '../../App.css';
 
 export function OwnerLayout() {
+    const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    // Mock user data - will be replaced with actual auth
-    const user = {
-        name: 'Rajkumar',
-        role: 'Owner'
-    };
+    const storedUser = authService.getCurrentUser();
+    const user = storedUser || { name: 'Owner', role: 'owner' };
+
+    useEffect(() => {
+        if (!authService.isAuthenticated()) {
+            navigate('/login');
+        }
+    }, [navigate]);
 
     return (
         <div className="dashboard-layout">

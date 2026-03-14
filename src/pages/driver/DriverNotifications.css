@@ -132,3 +132,40 @@
     margin-bottom: var(--space-3);
     padding-left: var(--space-1);
 }
+
+/* Notification Action Buttons */
+.notification-actions-header {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+}
+
+.notification-header-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 6px 12px;
+    border: 1px solid var(--grey-300);
+    border-radius: var(--radius-lg);
+    background: var(--white);
+    color: var(--grey-600);
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.notification-header-btn:hover {
+    background: var(--blue-50);
+    border-color: var(--blue-300);
+    color: var(--blue-600);
+}
+
+.notification-header-btn.clear:hover {
+    background: var(--red-50);
+    border-color: var(--red-300);
+    color: var(--red-600);
+}
+
+.notification-item {
+    cursor: pointer;
+}
