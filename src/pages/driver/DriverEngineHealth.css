@@ -312,3 +312,17 @@
     font-size: 13px;
     color: var(--grey-600, #475569);
 }
+
+@media (max-width: 640px) {
+    .deh-fuel-result-grid {
+        grid-template-columns: 1fr;
+    }
+    .deh-vehicle-banner {
+        flex-direction: column;
+        text-align: center;
+    }
+    .deh-score-body {
+        flex-direction: column;
+        text-align: center;
+    }
+}

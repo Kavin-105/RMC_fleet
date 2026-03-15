@@ -389,23 +389,6 @@
     transition: width 0.6s ease;
 }
 
-/* Responsive */
-@media (max-width: 900px) {
-    .analytics-summary-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    .analytics-two-col {
-        grid-template-columns: 1fr;
-    }
-    .analytics-compliance-row {
-        grid-template-columns: 1fr;
-    }
-}
-@media (max-width: 500px) {
-    .analytics-summary-grid {
-        grid-template-columns: 1fr;
-    }
-}
 
 /* Compliance Row */
 .analytics-compliance-row {
@@ -555,4 +538,28 @@
     font-size: 14px;
     color: var(--grey-800);
     font-weight: 700;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .analytics-summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .analytics-two-col {
+        grid-template-columns: 1fr;
+    }
+    .analytics-compliance-row {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 500px) {
+    .analytics-summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .doc-status-grid {
+        grid-template-columns: 1fr;
+    }
+    .fleet-status-grid {
+        grid-template-columns: 1fr;
+    }
 }

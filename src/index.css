@@ -302,7 +302,6 @@ button {
 
 @media (max-width: 768px) {
   :root {
-    --sidebar-width: 0px;
     --header-height: 56px;
   }
   
