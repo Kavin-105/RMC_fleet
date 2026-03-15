@@ -56,8 +56,10 @@ export const vehicleService = {
     },
 
     // Get fleet analytics
-    getFleetAnalytics: async () => {
-        const response = await api.get('/vehicles/analytics/summary');
+    getFleetAnalytics: async (vehicleId = '') => {
+        const response = await api.get('/vehicles/analytics/summary', {
+            params: { vehicleId }
+        });
         return response.data;
     },
 

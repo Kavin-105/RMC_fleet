@@ -4,6 +4,7 @@ import {
     CheckCircle, Brain, FileText, Activity, Gauge, Wrench,
     Bell, Fuel, ClipboardCheck, Users, Zap
 } from 'lucide-react';
+import mixerImage from '../../assets/hero-transit-mixer.png';
 import './Landing.css';
 
 export function Landing() {
@@ -60,30 +61,11 @@ export function Landing() {
                         </div>
                     </div>
                     <div className="lp-hero-graphic">
-                        <div className="lp-hero-card-main">
-                            <div className="lp-hero-card-top">
-                                <div className="lp-dot green"></div>
-                                <span>Fleet Dashboard</span>
-                            </div>
-                            <div className="lp-hero-card-grid">
-                                <div className="lp-mini-card">
-                                    <Truck size={20} />
-                                    <div><strong>Vehicles</strong><span>Track & Monitor</span></div>
-                                </div>
-                                <div className="lp-mini-card">
-                                    <Brain size={20} />
-                                    <div><strong>Engine AI</strong><span>Health Prediction</span></div>
-                                </div>
-                                <div className="lp-mini-card">
-                                    <FileText size={20} />
-                                    <div><strong>Documents</strong><span>Expiry Alerts</span></div>
-                                </div>
-                                <div className="lp-mini-card">
-                                    <BarChart3 size={20} />
-                                    <div><strong>Analytics</strong><span>Cost Insights</span></div>
-                                </div>
-                            </div>
-                        </div>
+                        <img 
+                            src={mixerImage} 
+                            alt="Transit Mixer Fleet" 
+                            className="lp-hero-image"
+                        />
                         <div className="lp-float-card lp-float-1">
                             <Activity size={18} />
                             <div>

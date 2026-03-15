@@ -192,64 +192,25 @@
 /* Hero Graphic */
 .lp-hero-graphic {
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-.lp-hero-card-main {
-    background: #fff;
+
+.lp-hero-image {
+    max-width: 100%;
+    height: auto;
     border-radius: 20px;
-    padding: 24px;
-    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08);
+    object-fit: contain;
+    animation: floatImage 6s ease-in-out infinite;
 }
-.lp-hero-card-top {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #64748b;
-    margin-bottom: 20px;
+
+@keyframes floatImage {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
 }
-.lp-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-}
-.lp-dot.green {
-    background: #10b981;
-    box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
-}
-.lp-hero-card-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-}
-.lp-mini-card {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px;
-    background: #f8fafc;
-    border-radius: 14px;
-    border: 1px solid #e2e8f0;
-}
-.lp-mini-card svg {
-    color: #3b82f6;
-    flex-shrink: 0;
-}
-.lp-mini-card div {
-    display: flex;
-    flex-direction: column;
-}
-.lp-mini-card strong {
-    font-size: 13px;
-    font-weight: 700;
-    color: #1e293b;
-}
-.lp-mini-card span {
-    font-size: 11px;
-    color: #94a3b8;
-    font-weight: 500;
-}
+
 .lp-float-card {
     position: absolute;
     display: flex;
@@ -261,6 +222,7 @@
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(0, 0, 0, 0.05);
     animation: float 4s ease-in-out infinite;
+    z-index: 10;
 }
 .lp-float-card svg {
     color: #3b82f6;

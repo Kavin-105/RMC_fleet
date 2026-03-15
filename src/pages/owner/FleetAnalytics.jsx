@@ -70,13 +70,30 @@ function ProgressRing({ value, size = 64, strokeWidth = 6, color = '#3b82f6' }) 
 export function FleetAnalytics() {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [vehicles, setVehicles] = useState([]);
+    const [selectedVehicle, setSelectedVehicle] = useState('');
 
-    useEffect(() => { fetchAnalytics(); }, []);
+    useEffect(() => {
+        fetchVehicles();
+    }, []);
 
-    const fetchAnalytics = async () => {
+    useEffect(() => {
+        fetchAnalytics(selectedVehicle);
+    }, [selectedVehicle]);
+
+    const fetchVehicles = async () => {
+        try {
+            const res = await vehicleService.getAll();
+            setVehicles(res.data);
+        } catch (error) {
+            console.error('Vehicles fetch error:', error);
+        }
+    };
+
+    const fetchAnalytics = async (vehicleId = '') => {
         setLoading(true);
         try {
-            const res = await vehicleService.getFleetAnalytics();
+            const res = await vehicleService.getFleetAnalytics(vehicleId);
             setData(res.data);
         } catch (error) {
             console.error('Analytics error:', error);
@@ -133,9 +150,23 @@ export function FleetAnalytics() {
                     <h1 className="page-title">Fleet Analytics</h1>
                     <p className="page-subtitle">Comprehensive fleet performance & compliance insights</p>
                 </div>
-                <button onClick={fetchAnalytics} className="analytics-refresh-btn">
-                    <RefreshCw size={16} /> Refresh
-                </button>
+                <div className="analytics-actions">
+                    <select
+                        className="analytics-vehicle-filter"
+                        value={selectedVehicle}
+                        onChange={(e) => setSelectedVehicle(e.target.value)}
+                    >
+                        <option value="">All Vehicles</option>
+                        {vehicles.map(v => (
+                            <option key={v._id} value={v._id}>
+                                {v.vehicleNumber} ({v.model})
+                            </option>
+                        ))}
+                    </select>
+                    <button onClick={() => fetchAnalytics(selectedVehicle)} className="analytics-refresh-btn">
+                        <RefreshCw size={16} /> Refresh
+                    </button>
+                </div>
             </div>
 
             {/* TOP KPI CARDS */}

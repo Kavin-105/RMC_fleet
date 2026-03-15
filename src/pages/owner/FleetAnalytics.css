@@ -39,6 +39,31 @@
     gap: 12px;
 }
 
+.analytics-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.analytics-vehicle-filter {
+    padding: 10px 14px;
+    border: 1px solid var(--grey-200);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--grey-800);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    min-width: 180px;
+}
+.analytics-vehicle-filter:focus,
+.analytics-vehicle-filter:hover {
+    border-color: var(--blue-300);
+}
+
 .analytics-refresh-btn {
     display: flex;
     align-items: center;

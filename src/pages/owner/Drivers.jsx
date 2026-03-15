@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Search, User, Edit2, Trash2, Phone, FileText, Loader2, Upload, CheckCircle } from 'lucide-react';
+import { Plus, Search, User, Edit2, Trash2, Phone, FileText, Loader2, Upload, CheckCircle, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import {
     Button,
@@ -29,6 +29,7 @@ export function Drivers() {
     const [extractingLicense, setExtractingLicense] = useState(false);
     const [licenseFile, setLicenseFile] = useState(null);
     const [licenseExtracted, setLicenseExtracted] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const fileInputRef = useRef(null);
     const [formData, setFormData] = useState({
         name: '',
@@ -66,6 +67,7 @@ export function Drivers() {
     });
 
     const handleOpenModal = (driver = null) => {
+        setShowPassword(false);
         if (driver) {
             setEditingDriver(driver);
             setFormData({
@@ -98,6 +100,7 @@ export function Drivers() {
         setEditingDriver(null);
         setLicenseFile(null);
         setLicenseExtracted(false);
+        setShowPassword(false);
     };
 
     const handleSubmit = async (e) => {
@@ -456,16 +459,35 @@ export function Drivers() {
                         required
                     />
 
-                    <Input
-                        label="Password"
-                        name="password"
-                        type="text"
-                        value={formData.password}
-                        onChange={handleChange}
-                        placeholder="Password for driver login"
-                        required
-                        helper={editingDriver ? "Current password is shown. Change if needed." : "Default password or set custom"}
-                    />
+                    <div className="form-group">
+                        <label htmlFor="driver-password" className="form-label required">
+                            Password
+                        </label>
+                        <div className="driver-password-wrapper">
+                            <input
+                                id="driver-password"
+                                className="form-input driver-password-input"
+                                name="password"
+                                type={showPassword ? 'text' : 'password'}
+                                value={formData.password}
+                                onChange={handleChange}
+                                placeholder="Password for driver login"
+                                required
+                            />
+                            <button
+                                type="button"
+                                className="driver-password-toggle"
+                                onClick={() => setShowPassword(prev => !prev)}
+                                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                title={showPassword ? 'Hide password' : 'Show password'}
+                            >
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                        </div>
+                        <p className="form-helper">
+                            {editingDriver ? 'Current password is loaded. Change it if needed.' : 'Default password or set custom'}
+                        </p>
+                    </div>
 
                     <div className="form-group">
                         <label className="form-label">Status</label>

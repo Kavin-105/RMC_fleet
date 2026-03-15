@@ -572,8 +572,15 @@ exports.getVehicleHealthScore = async (req, res) => {
 // @route   GET /api/vehicles/analytics/summary
 exports.getFleetAnalytics = async (req, res) => {
     try {
+        const { vehicleId } = req.query;
         const Driver = require('../models/Driver');
-        const vehicles = await Vehicle.find({ owner: req.user.id })
+        
+        let query = { owner: req.user.id };
+        if (vehicleId) {
+            query._id = vehicleId;
+        }
+
+        const vehicles = await Vehicle.find(query)
             .populate('assignedDriver', 'name');
 
         const sixMonthsAgo = new Date();

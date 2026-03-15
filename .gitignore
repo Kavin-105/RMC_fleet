@@ -32,3 +32,4 @@ __pycache__/
 *.sw?
 backend/.env
 backend/updateOwner.js
+backend/addPastExpenses.js
