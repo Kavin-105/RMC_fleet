@@ -78,6 +78,21 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'RMC Fleet API is running' });
 });
 
+// Root route (friendly message for browsers)
+app.get('/', (req, res) => {
+    res.send(`
+        <html>
+            <head><title>RMC Fleet API</title></head>
+            <body style="font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f8fafc; color: #1e293b;">
+                <div style="text-align: center; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
+                    <h1 style="color: #3b82f6; margin-top: 0;">RMC Fleet Server Active</h1>
+                    <p>The backend API is running successfully on Render.</p>
+                </div>
+            </body>
+        </html>
+    `);
+});
+
 // Error handler
 app.use((err, req, res, next) => {
     console.error(err.stack);
