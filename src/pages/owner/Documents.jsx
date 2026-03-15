@@ -218,7 +218,9 @@ export function Documents() {
     // Calculate days until expiry
     const getDaysUntilExpiry = (expiryDate) => {
         const today = new Date();
+        today.setHours(0, 0, 0, 0);
         const expiry = new Date(expiryDate);
+        expiry.setHours(0, 0, 0, 0);
         const diffTime = expiry - today;
         return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     };
@@ -292,7 +294,7 @@ export function Documents() {
                 <div className="documents-grid">
                     {filteredDocuments.map((doc) => {
                         const daysUntilExpiry = getDaysUntilExpiry(doc.expiryDate);
-                        const status = doc.status || (daysUntilExpiry < 0 ? 'Expired' : daysUntilExpiry <= 30 ? 'Expiring' : 'Valid');
+                        const status = daysUntilExpiry < 0 ? 'Expired' : daysUntilExpiry <= 30 ? 'Expiring' : 'Valid';
 
                         return (
                             <Card key={doc._id} className={`document-card ${status.toLowerCase()}`}>
@@ -323,8 +325,11 @@ export function Documents() {
                                     <Calendar size={14} />
                                     <span>
                                         Expires: {new Date(doc.expiryDate).toLocaleDateString('en-IN')}
+                                        {daysUntilExpiry === 0 && (
+                                            <span className="days-expired"> (Today!)</span>
+                                        )}
                                         {daysUntilExpiry > 0 && daysUntilExpiry <= 30 && (
-                                            <span className="days-warning"> ({daysUntilExpiry} days)</span>
+                                            <span className="days-warning"> ({daysUntilExpiry} day{daysUntilExpiry !== 1 ? 's' : ''})</span>
                                         )}
                                         {daysUntilExpiry < 0 && (
                                             <span className="days-expired"> (Expired)</span>

@@ -120,3 +120,35 @@
     color: var(--grey-400);
     font-style: italic;
 }
+
+.driver-password-wrapper {
+    position: relative;
+}
+
+.driver-password-input {
+    padding-right: 44px;
+}
+
+.driver-password-toggle {
+    position: absolute;
+    top: 50%;
+    right: var(--space-3);
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: var(--grey-400);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    cursor: pointer;
+}
+
+.driver-password-toggle:hover {
+    color: var(--grey-600);
+}
+
+.driver-password-toggle:focus-visible {
+    outline: none;
+    color: var(--primary-500);
+}

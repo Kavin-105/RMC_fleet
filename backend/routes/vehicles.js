@@ -7,11 +7,18 @@ const {
     createVehicle,
     updateVehicle,
     deleteVehicle,
-    assignDriver
+    assignDriver,
+    predictEngineHealth,
+    getVehicleHealthScore,
+    getFleetAnalytics,
+    getLastPrediction
 } = require('../controllers/vehicleController');
 const { protect, authorize } = require('../middleware/auth');
 
 router.use(protect);
+
+// Fleet analytics (must be before /:id routes)
+router.get('/analytics/summary', authorize('owner'), getFleetAnalytics);
 
 router
     .route('/')
@@ -19,6 +26,9 @@ router
     .post(authorize('owner'), createVehicle);
 
 router.get('/:id/details', getVehicleDetails);
+router.post('/:id/engine-health', predictEngineHealth);
+router.get('/:id/health-score', getVehicleHealthScore);
+router.get('/:id/last-prediction', getLastPrediction);
 
 router
     .route('/:id')

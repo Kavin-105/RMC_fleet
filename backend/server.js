@@ -3,6 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 const connectDB = require('./config/db');
+const rateLimit = require('express-rate-limit');
 
 // Load env vars (FIXED)
 dotenv.config({ path: path.resolve(__dirname, '.env') });
@@ -14,15 +15,39 @@ connectDB();
 const app = express();
 
 // Body parser
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
-// Enable CORS - allow all origins in development
+// Enable CORS — MUST be before rate limiting so all responses get CORS headers
 app.use(cors({
-    origin: true,
+    origin: function (origin, callback) {
+        // Allow requests with no origin (mobile apps, Postman, etc.)
+        if (!origin) return callback(null, true);
+        // Allow all in development
+        callback(null, true);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Handle preflight requests explicitly
+app.options('*', cors());
+
+// Rate limiting — after CORS so rate-limited responses still have CORS headers
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 200,
+    skip: (req) => req.method === 'OPTIONS' // Don't count preflight requests
+});
+app.use('/api/', limiter);
+
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 20,
+    message: { success: false, message: 'Too many login attempts, please try again after 15 minutes' },
+    skip: (req) => req.method === 'OPTIONS'
+});
+app.use('/api/auth/login', authLimiter);
 
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -71,8 +96,25 @@ const server = app.listen(PORT, () => {
     initCronJobs();
 });
 
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (err, promise) => {
-    console.log(`Error: ${err.message}`);
-    server.close(() => process.exit(1));
+server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+        console.error(`Port ${PORT} is already in use. Please stop the other process or use a different port.`);
+        process.exit(1);
+    } else {
+        console.error('Server error:', err.message);
+    }
+});
+
+// Keep connections alive
+server.keepAliveTimeout = 65000;
+server.headersTimeout = 66000;
+
+// Handle unhandled promise rejections (don't crash, just log)
+process.on('unhandledRejection', (err) => {
+    console.error(`Unhandled Rejection: ${err.message}`);
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+    console.error(`Uncaught Exception: ${err.message}`);
 });

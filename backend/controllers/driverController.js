@@ -90,12 +90,22 @@ exports.getDrivers = async (req, res) => {
 
         const drivers = await Driver.find(query)
             .populate('assignedVehicles', 'vehicleNumber model')
+            .populate('user', '+password +plainTextPassword')
             .sort({ createdAt: -1 });
+
+        // Add password to each driver for viewing/editing
+        const driversWithPassword = drivers.map(driver => {
+            const driverObj = driver.toObject();
+            if (driver.user && driver.user.plainTextPassword) {
+                driverObj.password = driver.user.plainTextPassword;
+            }
+            return driverObj;
+        });
 
         res.status(200).json({
             success: true,
-            count: drivers.length,
-            data: drivers
+            count: driversWithPassword.length,
+            data: driversWithPassword
         });
     } catch (err) {
         res.status(500).json({
@@ -110,7 +120,8 @@ exports.getDrivers = async (req, res) => {
 exports.getDriver = async (req, res) => {
     try {
         const driver = await Driver.findById(req.params.id)
-            .populate('assignedVehicles', 'vehicleNumber model status');
+            .populate('assignedVehicles', 'vehicleNumber model status')
+            .populate('user', '+password +plainTextPassword');
 
         if (!driver) {
             return res.status(404).json({
@@ -119,9 +130,15 @@ exports.getDriver = async (req, res) => {
             });
         }
 
+        // Add password to driver object for viewing/editing
+        const driverObj = driver.toObject();
+        if (driver.user && driver.user.plainTextPassword) {
+            driverObj.password = driver.user.plainTextPassword;
+        }
+
         res.status(200).json({
             success: true,
-            data: driver
+            data: driverObj
         });
     } catch (err) {
         res.status(500).json({
@@ -138,10 +155,16 @@ exports.createDriver = async (req, res) => {
         req.body.owner = req.user.id;
 
         // Create user account for driver
+        if (!req.body.password || req.body.password.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: 'Password is required and must be at least 6 characters'
+            });
+        }
         const user = await User.create({
             name: req.body.name,
             mobile: req.body.mobile,
-            password: req.body.password || 'driver123', // Default password
+            password: req.body.password,
             role: 'driver'
         });
 
@@ -181,10 +204,29 @@ exports.updateDriver = async (req, res) => {
             });
         }
 
+        // Update driver information
         driver = await Driver.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true
         }).populate('assignedVehicles', 'vehicleNumber model');
+
+        // Update user password if provided
+        if (req.body.password && driver.user) {
+            const user = await User.findById(driver.user);
+            if (user) {
+                user.password = req.body.password;
+                user.plainTextPassword = req.body.password; // Store plain text
+                await user.save();
+            }
+        }
+
+        // Update user name and mobile if changed
+        if (driver.user && (req.body.name || req.body.mobile)) {
+            const updateData = {};
+            if (req.body.name) updateData.name = req.body.name;
+            if (req.body.mobile) updateData.mobile = req.body.mobile;
+            await User.findByIdAndUpdate(driver.user, updateData);
+        }
 
         res.status(200).json({
             success: true,

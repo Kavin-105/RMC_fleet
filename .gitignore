@@ -30,3 +30,6 @@ __pycache__/
 *.njsproj
 *.sln
 *.sw?
+backend/.env
+backend/updateOwner.js
+backend/addPastExpenses.js

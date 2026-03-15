@@ -25,7 +25,9 @@ export function DriverExpenses() {
     const [formData, setFormData] = useState({
         type: '',
         amount: '',
-        description: ''
+        description: '',
+        maintenanceCategory: '',
+        odometerReading: ''
     });
 
     useEffect(() => {
@@ -106,6 +108,12 @@ export function DriverExpenses() {
             uploadData.append('type', formData.type);
             uploadData.append('amount', parseFloat(formData.amount));
             uploadData.append('description', formData.description);
+            if (formData.type === 'Maintenance' && formData.maintenanceCategory) {
+                uploadData.append('maintenanceCategory', formData.maintenanceCategory);
+            }
+            if (formData.odometerReading) {
+                uploadData.append('odometerReading', parseFloat(formData.odometerReading));
+            }
             uploadData.append('vehicle', driver?.assignedVehicles?.[0]?._id || driver?.assignedVehicles?.[0]);
             uploadData.append('driver', driver?._id);
             uploadData.append('date', new Date().toISOString());
@@ -117,7 +125,7 @@ export function DriverExpenses() {
             await expenseService.create(uploadData);
             toast.success('Expense submitted successfully!');
 
-            setFormData({ type: '', amount: '', description: '' });
+            setFormData({ type: '', amount: '', description: '', maintenanceCategory: '', odometerReading: '' });
             setSelectedFile(null);
             setFilePreview(null);
             setShowForm(false);
@@ -212,6 +220,44 @@ export function DriverExpenses() {
                         />
                     </div>
 
+                    {/* Maintenance Category - shown only when type is Maintenance */}
+                    {formData.type === 'Maintenance' && (
+                        <select
+                            value={formData.maintenanceCategory}
+                            onChange={(e) => setFormData(prev => ({ ...prev, maintenanceCategory: e.target.value }))}
+                            style={{
+                                width: '100%', padding: '12px', borderRadius: '10px',
+                                border: '1px solid var(--grey-300)', fontSize: '14px',
+                                background: '#fff', color: 'var(--grey-800)',
+                                outline: 'none', boxSizing: 'border-box'
+                            }}
+                        >
+                            <option value="">Select maintenance category</option>
+                            <option value="Engine Repair">Engine Repair</option>
+                            <option value="Brake Service">Brake Service</option>
+                            <option value="Oil Change">Oil Change</option>
+                            <option value="Tire Replacement">Tire Replacement</option>
+                            <option value="Battery">Battery</option>
+                            <option value="Electrical">Electrical</option>
+                            <option value="Body Work">Body Work</option>
+                            <option value="General Service">General Service</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    )}
+
+                    {/* Odometer Reading */}
+                    <input
+                        type="number"
+                        placeholder="Current odometer reading (km) - optional"
+                        value={formData.odometerReading}
+                        onChange={(e) => setFormData(prev => ({ ...prev, odometerReading: e.target.value }))}
+                        style={{
+                            width: '100%', padding: '12px', borderRadius: '10px',
+                            border: '1px solid var(--grey-300)', fontSize: '14px',
+                            boxSizing: 'border-box', outline: 'none'
+                        }}
+                    />
+
                     {/* Description */}
                     <Textarea
                         placeholder="Add a description (optional)"
@@ -282,9 +328,10 @@ export function DriverExpenses() {
                                         <TypeIcon size={20} />
                                     </div>
                                     <div className="expense-history-info">
-                                        <h4>{expense.type}</h4>
+                                        <h4>{expense.type}{expense.maintenanceCategory ? ` — ${expense.maintenanceCategory}` : ''}</h4>
                                         <p>
                                             {new Date(expense.date || expense.createdAt).toLocaleDateString('en-IN')}
+                                            {expense.odometerReading && ` • ${expense.odometerReading.toLocaleString()} km`}
                                             {expense.description && ` • ${expense.description}`}
                                         </p>
                                     </div>

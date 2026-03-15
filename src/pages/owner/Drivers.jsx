@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Search, User, Edit2, Trash2, Phone, FileText, Loader2, Upload, CheckCircle } from 'lucide-react';
+import { Plus, Search, User, Edit2, Trash2, Phone, FileText, Loader2, Upload, CheckCircle, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import {
     Button,
@@ -29,6 +29,7 @@ export function Drivers() {
     const [extractingLicense, setExtractingLicense] = useState(false);
     const [licenseFile, setLicenseFile] = useState(null);
     const [licenseExtracted, setLicenseExtracted] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const fileInputRef = useRef(null);
     const [formData, setFormData] = useState({
         name: '',
@@ -66,6 +67,7 @@ export function Drivers() {
     });
 
     const handleOpenModal = (driver = null) => {
+        setShowPassword(false);
         if (driver) {
             setEditingDriver(driver);
             setFormData({
@@ -74,7 +76,7 @@ export function Drivers() {
                 licenseNumber: driver.licenseNumber,
                 licenseExpiry: driver.licenseExpiry ? driver.licenseExpiry.split('T')[0] : '',
                 status: driver.status,
-                password: ''
+                password: driver.password || '' // Show existing password
             });
             setLicenseExtracted(true); // Already has license for editing
         } else {
@@ -98,6 +100,7 @@ export function Drivers() {
         setEditingDriver(null);
         setLicenseFile(null);
         setLicenseExtracted(false);
+        setShowPassword(false);
     };
 
     const handleSubmit = async (e) => {
@@ -390,19 +393,19 @@ export function Drivers() {
                     {/* License Upload Section */}
                     <div className="form-group">
                         <label className="form-label">
-                            Upload Driver License <span style={{ color: 'var(--gray-500)', fontWeight: 'normal' }}>(Image or PDF)</span>
+                            Upload Driver License <span style={{ color: 'var(--grey-500)', fontWeight: 'normal' }}>(Image or PDF)</span>
                         </label>
                         <div 
                             className="license-upload-area"
                             onClick={() => fileInputRef.current?.click()}
                             style={{
-                                border: '2px dashed var(--gray-300)',
+                                border: '2px dashed var(--grey-300)',
                                 borderRadius: 'var(--radius-md)',
                                 padding: 'var(--space-4)',
                                 textAlign: 'center',
                                 cursor: 'pointer',
-                                background: licenseExtracted ? 'var(--green-50)' : 'var(--gray-50)',
-                                borderColor: licenseExtracted ? 'var(--green-400)' : 'var(--gray-300)',
+                                background: licenseExtracted ? 'var(--green-50)' : 'var(--grey-50)',
+                                borderColor: licenseExtracted ? 'var(--green-400)' : 'var(--grey-300)',
                                 transition: 'all 0.2s ease'
                             }}
                         >
@@ -416,7 +419,7 @@ export function Drivers() {
                             {extractingLicense ? (
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-2)' }}>
                                     <Loader2 size={20} className="spin" style={{ color: 'var(--primary-500)' }} />
-                                    <span style={{ color: 'var(--gray-600)' }}>Extracting license number...</span>
+                                    <span style={{ color: 'var(--grey-600)' }}>Extracting license number...</span>
                                 </div>
                             ) : licenseExtracted ? (
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-2)' }}>
@@ -425,11 +428,11 @@ export function Drivers() {
                                 </div>
                             ) : (
                                 <div>
-                                    <Upload size={24} style={{ color: 'var(--gray-400)', marginBottom: 'var(--space-2)' }} />
-                                    <p style={{ color: 'var(--gray-600)', margin: 0, fontSize: '0.875rem' }}>
+                                    <Upload size={24} style={{ color: 'var(--grey-400)', marginBottom: 'var(--space-2)' }} />
+                                    <p style={{ color: 'var(--grey-600)', margin: 0, fontSize: '0.875rem' }}>
                                         {licenseFile ? licenseFile.name : 'Click to upload license image or PDF'}
                                     </p>
-                                    <p style={{ color: 'var(--gray-400)', margin: 'var(--space-1) 0 0', fontSize: '0.75rem' }}>
+                                    <p style={{ color: 'var(--grey-400)', margin: 'var(--space-1) 0 0', fontSize: '0.75rem' }}>
                                         License number will be extracted automatically using AI
                                     </p>
                                 </div>
@@ -456,17 +459,35 @@ export function Drivers() {
                         required
                     />
 
-                    {!editingDriver && (
-                        <Input
-                            label="Password"
-                            name="password"
-                            type="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            placeholder="Password for driver login"
-                            required
-                        />
-                    )}
+                    <div className="form-group">
+                        <label htmlFor="driver-password" className="form-label required">
+                            Password
+                        </label>
+                        <div className="driver-password-wrapper">
+                            <input
+                                id="driver-password"
+                                className="form-input driver-password-input"
+                                name="password"
+                                type={showPassword ? 'text' : 'password'}
+                                value={formData.password}
+                                onChange={handleChange}
+                                placeholder="Password for driver login"
+                                required
+                            />
+                            <button
+                                type="button"
+                                className="driver-password-toggle"
+                                onClick={() => setShowPassword(prev => !prev)}
+                                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                title={showPassword ? 'Hide password' : 'Show password'}
+                            >
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                        </div>
+                        <p className="form-helper">
+                            {editingDriver ? 'Current password is loaded. Change it if needed.' : 'Default password or set custom'}
+                        </p>
+                    </div>
 
                     <div className="form-group">
                         <label className="form-label">Status</label>

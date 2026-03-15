@@ -20,6 +20,15 @@ const expenseSchema = new mongoose.Schema({
         type: Number,
         required: [true, 'Please provide amount']
     },
+    maintenanceCategory: {
+        type: String,
+        enum: ['Engine Repair', 'Brake Service', 'Oil Change', 'Tire Replacement', 'Battery', 'Electrical', 'Body Work', 'General Service', 'Other'],
+        default: null
+    },
+    odometerReading: {
+        type: Number,
+        default: null
+    },
     description: {
         type: String,
         trim: true

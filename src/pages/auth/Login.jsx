@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2, Truck, User, Phone, Loader2 } from 'lucide-react';
+import { Building2, Truck, User, Phone, Loader2, KeyRound } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button, Input } from '../../components/ui';
 import { authService } from '../../services';
@@ -11,6 +11,9 @@ export function Login() {
     const [role, setRole] = useState('owner');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
+    const [forgotEmail, setForgotEmail] = useState('');
+    const [forgotLoading, setForgotLoading] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
         mobile: '',
@@ -95,18 +98,9 @@ export function Login() {
                 alert('⚠️ Login Failed\n\n' + message + '\n\nPlease check your credentials and try again.');
             }
 
-            // Fallback to demo mode if backend is not available
+            // Fallback notification if backend is not available
             if (error.code === 'ERR_NETWORK') {
-                toast.error('Backend not connected. Using demo mode.');
-                if (role === 'owner') {
-                    localStorage.setItem('token', 'demo-token');
-                    localStorage.setItem('user', JSON.stringify({ id: 'demo', role: 'owner', name: 'Amit Sharma' }));
-                    navigate('/owner');
-                } else {
-                    localStorage.setItem('token', 'demo-token');
-                    localStorage.setItem('user', JSON.stringify({ id: 'demo', role: 'driver', name: 'Rajesh Kumar' }));
-                    navigate('/driver');
-                }
+                toast.error('Cannot connect to server. Please ensure the backend is running.');
             }
         } finally {
             setLoading(false);
@@ -152,16 +146,7 @@ export function Login() {
 
                 <form onSubmit={handleSubmit}>
                     {error && (
-                        <div className="error-message" style={{
-                            padding: '12px 16px',
-                            marginBottom: '16px',
-                            backgroundColor: '#fee',
-                            border: '1px solid #fcc',
-                            borderRadius: '8px',
-                            color: '#c33',
-                            fontSize: '14px',
-                            fontWeight: '500'
-                        }}>
+                        <div className="login-error-message">
                             {error}
                         </div>
                     )}
@@ -204,34 +189,81 @@ export function Login() {
                         type="submit"
                         fullWidth
                         size="lg"
-                        style={{ marginTop: 'var(--space-4)' }}
+                        className="login-submit-btn"
                         disabled={loading}
                     >
                         {loading ? (
                             <>
-                                <Loader2 size={18} className="spin" style={{ marginRight: 8 }} />
+                                <Loader2 size={18} className="spin login-spinner" />
                                 Signing In...
                             </>
                         ) : (
                             `Sign In as ${role === 'owner' ? 'Owner' : 'Driver'}`
                         )}
                     </Button>
+
+                    {role === 'owner' && (
+                        <div className="login-forgot-wrapper">
+                            <button
+                                type="button"
+                                className="login-forgot-btn"
+                                onClick={() => setShowForgotPassword(true)}
+                            >
+                                <KeyRound size={14} className="login-forgot-icon" />
+                                Forgot Password?
+                            </button>
+                        </div>
+                    )}
                 </form>
 
-                <div className="demo-credentials">
-                    <p className="demo-credentials-title">Demo Credentials</p>
-                    {role === 'owner' ? (
-                        <>
-                            <p className="demo-credentials-item"><strong>Email:</strong> owner@demo.com</p>
-                            <p className="demo-credentials-item"><strong>Password:</strong> demo123</p>
-                        </>
-                    ) : (
-                        <>
-                            <p className="demo-credentials-item"><strong>Mobile:</strong> 9876543210</p>
-                            <p className="demo-credentials-item"><strong>Password:</strong> driver123</p>
-                        </>
-                    )}
-                </div>
+                {/* Forgot Password Modal */}
+                {showForgotPassword && (
+                    <div className="login-modal-overlay">
+                        <div className="login-modal-content">
+                            <h3 className="login-modal-title">Reset Password</h3>
+                            <p className="login-modal-desc">
+                                Enter your email address and we'll send you a password reset link.
+                            </p>
+                            <Input
+                                label="Email Address"
+                                type="email"
+                                value={forgotEmail}
+                                onChange={(e) => setForgotEmail(e.target.value)}
+                                placeholder="Enter your email"
+                                icon={User}
+                            />
+                            <div className="login-modal-actions">
+                                <Button
+                                    variant="secondary"
+                                    className="login-modal-btn"
+                                    onClick={() => { setShowForgotPassword(false); setForgotEmail(''); }}
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    className="login-modal-btn"
+                                    onClick={async () => {
+                                        if (!forgotEmail) { toast.error('Please enter your email'); return; }
+                                        setForgotLoading(true);
+                                        try {
+                                            await authService.forgotPassword(forgotEmail);
+                                            toast.success('Password reset email sent! Check your inbox.');
+                                            setShowForgotPassword(false);
+                                            setForgotEmail('');
+                                        } catch (err) {
+                                            toast.error(err.response?.data?.message || 'Failed to send reset email');
+                                        } finally {
+                                            setForgotLoading(false);
+                                        }
+                                    }}
+                                    disabled={forgotLoading}
+                                >
+                                    {forgotLoading ? 'Sending...' : 'Send Reset Link'}
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
