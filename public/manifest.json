@@ -1,7 +1,7 @@
 {
   "name": "RKM Transports",
   "short_name": "RKM",
-  "start_url": "/",
+  "start_url": "/login",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
@@ -13,7 +13,7 @@
     },
     {
       "src": "/icon-512.png",
-      "sizes": "512x512",
+      "sizes": "680x680",
       "type": "image/png"
     }
   ]
