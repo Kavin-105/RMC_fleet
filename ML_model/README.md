@@ -77,6 +77,30 @@ Navigate to: **http://localhost:5000**
 
 ---
 
+## ☁️ Deploy on Render (ML Service)
+
+Use a **separate Render Web Service** for this `ML_model` folder.
+
+### Render Service Settings
+- **Root Directory:** `ML_model`
+- **Build Command:** `pip install -r requirements.txt`
+- **Start Command:** `gunicorn app:app --bind 0.0.0.0:$PORT --timeout 180`
+
+### Python Version
+- This project includes `runtime.txt` with `python-3.11.11`.
+- If Render still picks another version, set environment variable:
+   - `PYTHON_VERSION=3.11.11`
+
+### Why this is required
+- `easyocr` and OCR dependencies are more stable on Python 3.11 than latest runtimes.
+- Render requires binding to `$PORT`; fixed in app startup and in `gunicorn` command.
+
+### Health Check
+- Endpoint: `/health`
+- Expected response: `{"status":"OK","model_loaded":true}`
+
+---
+
 ## 💻 Usage
 
 ### Web Interface

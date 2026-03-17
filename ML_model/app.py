@@ -8,21 +8,43 @@ import os
 import tempfile
 from PIL import Image
 import cv2
-import easyocr
 
-# Initialize EasyOCR reader (English) with optimized settings
-print("Loading EasyOCR model... (this may take a moment on first run)")
-ocr_reader = easyocr.Reader(['en'], gpu=False, model_storage_directory=None, verbose=False)
-print("EasyOCR model loaded successfully!")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Lazy OCR initialization to avoid startup crashes/timeouts during deploy
+ocr_reader = None
+ocr_init_error = None
+
+
+def get_ocr_reader():
+    """Initialize and cache EasyOCR reader on first use."""
+    global ocr_reader, ocr_init_error
+
+    if ocr_reader is not None:
+        return ocr_reader
+
+    if ocr_init_error is not None:
+        raise RuntimeError(ocr_init_error)
+
+    try:
+        import easyocr
+        print("Loading EasyOCR model... (first OCR request may take a moment)")
+        ocr_reader = easyocr.Reader(['en'], gpu=False, model_storage_directory=None, verbose=False)
+        print("EasyOCR model loaded successfully!")
+        return ocr_reader
+    except Exception as error:
+        ocr_init_error = f"EasyOCR initialization failed: {error}"
+        raise RuntimeError(ocr_init_error)
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
 # Load the trained models
 try:
-    model = joblib.load("engine_health_model.pkl")
-    feature_importance = joblib.load("feature_importance.pkl")
-except:
+    model = joblib.load(os.path.join(BASE_DIR, "engine_health_model.pkl"))
+    feature_importance = joblib.load(os.path.join(BASE_DIR, "feature_importance.pkl"))
+except Exception as error:
+    print(f"[MODEL] Failed to load model files: {error}")
     model = None
     feature_importance = None
 
@@ -242,6 +264,9 @@ def index():
 def predict():
     """Handle prediction requests"""
     try:
+        if model is None:
+            return jsonify({'error': 'Model not loaded on server. Verify model files and deployment path.'}), 503
+
         data = request.json
         
         # Extract parameters
@@ -304,7 +329,7 @@ def predict():
 def get_stats():
     """Get dataset statistics"""
     try:
-        df = pd.read_csv("engine_data.csv")
+        df = pd.read_csv(os.path.join(BASE_DIR, "engine_data.csv"))
         
         stats = {
             'total_records': len(df),
@@ -523,6 +548,8 @@ def extract_expiry_date(text):
 def extract_license():
     """Extract license number from uploaded image or PDF"""
     try:
+        reader = get_ocr_reader()
+
         if 'file' not in request.files:
             return jsonify({'success': False, 'error': 'No file uploaded'}), 400
         
@@ -576,7 +603,7 @@ def extract_license():
                     print(f"[OCR] Image size: {img_array.shape}")
                     
                     # Perform OCR once with optimized settings
-                    results = ocr_reader.readtext(img_array, paragraph=False, batch_size=4)
+                    results = reader.readtext(img_array, paragraph=False, batch_size=4)
                     extracted_text = ' '.join([result[1] for result in results])
                     
                     pdf_document.close()
@@ -621,7 +648,7 @@ def extract_license():
                 print(f"[OCR] Image size: {img_array.shape}")
                 
                 # Perform OCR with speed optimizations
-                results = ocr_reader.readtext(img_array, paragraph=False, batch_size=4)
+                results = reader.readtext(img_array, paragraph=False, batch_size=4)
                 extracted_text = ' '.join([result[1] for result in results])
                 
                 ocr_time = time.time() - start_time
@@ -667,14 +694,15 @@ def extract_license():
 
 
 if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
     print("="*60)
     print("🚀 ENGINE HEALTH PREDICTION & LICENSE OCR WEB APPLICATION")
     print("="*60)
     print("\n✓ Server starting...")
     print("✓ Open your browser and navigate to:")
-    print("\n   👉 http://localhost:5000")
+    print(f"\n   👉 http://localhost:{port}")
     print("\n   Available endpoints:")
     print("   - /predict - Engine health prediction")
     print("   - /extract-license - License number OCR extraction")
     print("\n" + "="*60)
-    app.run(debug=False, host='0.0.0.0', port=5000, threaded=True)
+    app.run(debug=False, host='0.0.0.0', port=port, threaded=True)

@@ -5,7 +5,7 @@ const axios = require('axios');
 const FormData = require('form-data');
 
 // ML Service URL for license OCR - use 127.0.0.1 to avoid IPv6 issues
-const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://127.0.0.1:5001';
+const ML_SERVICE_URL = (process.env.ML_SERVICE_URL || 'http://127.0.0.1:5000');
 
 // @desc    Extract license number from image/PDF using ML OCR
 // @route   POST /api/drivers/extract-license
@@ -56,10 +56,17 @@ exports.extractLicense = async (req, res) => {
     } catch (err) {
         console.error('License extraction error:', err.message);
         
-        if (err.code === 'ECONNREFUSED') {
+        if (['ECONNREFUSED', 'ENOTFOUND', 'EAI_AGAIN', 'ECONNRESET'].includes(err.code)) {
             return res.status(503).json({
                 success: false,
-                message: 'ML service is not available. Please ensure the ML server is running.'
+                message: `ML service is not available at ${ML_SERVICE_URL}. Set ML_SERVICE_URL correctly in backend environment variables.`
+            });
+        }
+
+        if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+            return res.status(504).json({
+                success: false,
+                message: `ML service timed out at ${ML_SERVICE_URL}. Please try again.`
             });
         }
         

@@ -5,7 +5,7 @@ const Checklist = require('../models/Checklist');
 const Notification = require('../models/Notification');
 const axios = require('axios');
 
-const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://127.0.0.1:5001';
+const ML_SERVICE_URL = (process.env.ML_SERVICE_URL || 'http://127.0.0.1:5000');
 
 // @desc    Get all vehicles
 // @route   GET /api/vehicles
@@ -426,11 +426,17 @@ exports.predictEngineHealth = async (req, res) => {
             }
         });
     } catch (err) {
-        if (err.code === 'ECONNREFUSED') {
-            return res.status(503).json({ success: false, message: 'ML service is not available' });
+        if (['ECONNREFUSED', 'ENOTFOUND', 'EAI_AGAIN', 'ECONNRESET'].includes(err.code)) {
+            return res.status(503).json({
+                success: false,
+                message: `ML service is not available at ${ML_SERVICE_URL}. Set ML_SERVICE_URL correctly in backend environment variables.`
+            });
         }
         if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
-            return res.status(504).json({ success: false, message: 'ML service timed out. Please try again.' });
+            return res.status(504).json({
+                success: false,
+                message: `ML service timed out at ${ML_SERVICE_URL}. Please try again.`
+            });
         }
         console.error('Prediction error:', err.message);
         res.status(500).json({ success: false, message: err.message });
