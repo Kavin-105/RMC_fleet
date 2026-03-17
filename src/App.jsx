@@ -31,8 +31,14 @@ import './index.css';
 import './App.css';
 
 function App() {
+  const isStandaloneDisplay = window.matchMedia?.('(display-mode: standalone)').matches;
+  const isIosStandalone = window.navigator.standalone === true;
+  const isPwaPath = window.location.pathname.startsWith('/pwa');
+  const isPwaMode = isStandaloneDisplay || isIosStandalone || isPwaPath;
+  const routerBaseName = isPwaMode ? '/pwa' : '/';
+
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={routerBaseName}>
       <Toaster
         position="top-right"
         toastOptions={{
@@ -48,7 +54,10 @@ function App() {
       />
       <Routes>
         {/* Landing Page */}
-        <Route path="/" element={<Landing />} />
+        <Route
+          path="/"
+          element={isPwaMode ? <Navigate to="/login" replace /> : <Landing />}
+        />
 
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />

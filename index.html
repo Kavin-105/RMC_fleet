@@ -8,11 +8,36 @@
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#000000" />
   <title>RKM Transports</title>
+  <style>
+    #splash {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: #272323;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  z-index: 9999;
+}
+  </style>
 </head>
 
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
+  <div id="splash">
+  <h1>Welcome to RKM Transports</h1>
+</div>
+<script>
+  window.addEventListener("load", () => {
+  const splash = document.getElementById("splash");
+  setTimeout(() => {
+    splash.style.display = "none";
+  }, 1500); // show for 1.5 sec
+});
+</script>
 </body>
 
 </html>
