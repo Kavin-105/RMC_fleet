@@ -10,8 +10,9 @@ matplotlib==3.8.2
 # OCR and Image Processing for License Extraction
 easyocr==1.7.1
 python-bidi==0.4.2
-opencv-python==4.8.1.78
+opencv-python-headless==4.8.1.78
 Pillow==10.1.0
 PyMuPDF==1.23.8
+--extra-index-url https://download.pytorch.org/whl/cpu
 torch
 torchvision

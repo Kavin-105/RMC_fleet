@@ -1,5 +1,7 @@
 import api from './api';
 
+const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
 export const driverService = {
     // Get all drivers
     getAll: async (params = {}) => {
@@ -41,14 +43,28 @@ export const driverService = {
     extractLicense: async (file) => {
         const formData = new FormData();
         formData.append('licenseFile', file);
-        
-        const response = await api.post('/drivers/extract-license', formData, {
+
+        const requestConfig = {
             headers: {
                 'Content-Type': 'multipart/form-data'
             },
-            timeout: 120000 // 120 second timeout for OCR processing
-        });
-        return response.data;
+            timeout: 180000 // 180 seconds for OCR cold starts
+        };
+
+        try {
+            const response = await api.post('/drivers/extract-license', formData, requestConfig);
+            return response.data;
+        } catch (error) {
+            const shouldRetry = !error.response && (error.code === 'ERR_NETWORK' || error.message?.includes('Network Error'));
+
+            if (!shouldRetry) {
+                throw error;
+            }
+
+            await sleep(1500);
+            const retryResponse = await api.post('/drivers/extract-license', formData, requestConfig);
+            return retryResponse.data;
+        }
     }
 };
 

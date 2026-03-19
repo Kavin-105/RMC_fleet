@@ -29,7 +29,9 @@ def get_ocr_reader():
     try:
         import easyocr
         print("Loading EasyOCR model... (first OCR request may take a moment)")
-        ocr_reader = easyocr.Reader(['en'], gpu=False, model_storage_directory=None, verbose=False)
+        cache_dir = os.path.join(BASE_DIR, "model_cache")
+        os.makedirs(cache_dir, exist_ok=True)
+        ocr_reader = easyocr.Reader(['en'], gpu=False, model_storage_directory=cache_dir, verbose=False)
         print("EasyOCR model loaded successfully!")
         return ocr_reader
     except Exception as error:

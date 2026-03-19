@@ -5,7 +5,12 @@ const Checklist = require('../models/Checklist');
 const Notification = require('../models/Notification');
 const axios = require('axios');
 
-const ML_SERVICE_URL = (process.env.ML_SERVICE_URL || 'http://127.0.0.1:5000');
+const DEFAULT_LOCAL_ML_URL = 'http://127.0.0.1:5000';
+const DEFAULT_PROD_ML_URL = 'https://rmc-fleet-ml.onrender.com';
+const ML_SERVICE_URL = (
+    process.env.ML_SERVICE_URL ||
+    (process.env.NODE_ENV === 'production' ? DEFAULT_PROD_ML_URL : DEFAULT_LOCAL_ML_URL)
+).replace(/\/+$/, '');
 
 // @desc    Get all vehicles
 // @route   GET /api/vehicles
